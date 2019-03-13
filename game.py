@@ -1,4 +1,5 @@
 import pygame
+import random
 
 class World():
     """Grid world that contains the player, wall, sludge, and the npcs.
@@ -12,46 +13,71 @@ class World():
         pygame.init() # initialize the pygame module
         screen_size = (height * cell_size, width * cell_size)
         self.screen = pygame.display.set_mode(screen_size)
+        self.actors = {} # initialize the actors
         # set the dimensions of the world
         self.width = width
         self.height = height
         self.cell_size = cell_size
-
+        self._init_cells() # creates the cells
     def _draw_background(self):
         """Sets the background color"""
         COLOR = (252, 216, 169) # the beige from the legend of zelda games
         self.screen.fill(COLOR)
+    def _init_cells(self): # creates the cells
+        self.cells = {}
+        cell_size = (self.cell_size, self.cell_size)
+        for i in range(self.height):
+            for j in range(self.width):
+                cell_coord = (i * self.cell_size, j * self.cell_size)
+                self.cells[(i, j)] = Cell(self.screen, cell_coord, cell_size)
 
-    def _door_location(self, door_position = 'top-center', door_width = 1):
+    def _add_coords(self, a, b):
+        """Return a third coord that is equivalent to (a[0]+b[0], a[1]+b[1])."""
+        return tuple(map(sum, zip(a, b)))
+
+    def _door_location(self, door_position = random.randint(1, 4)):
         """Determine the opening location, the places not to place wall
         tiles as a border
-        door_position: The position of the door (top, bottom, left, right; dash;
-        center, left, right). Also accepts random numbers 0-
-        door_width: The width of the door in cells
+        door_position: The position of the door based on a number. 1:top,
+        2:bottom, 3: left, 4:right
 
         returns: Tuple of the position of the opening
 
-        The following doctest was added to test if the method returns the correct
-        position for the default state.
+        The following doctest was added to test all four positions
         >>> world = World()
-        >>> world._door_location()
-        (10.0, 0, 1)
-
-        The following doctest was added to check if could get the door width and
-        a position for a non-default state.
-        >>> world = World()
-        >>> world._door_location('top-left', 2)
-        (1, 0, 2)"""
+        >>> world._door_location(1)
+        (10, 0, 1)
+        >>> world._door_location(2)
+        (10, 20, 1)
+        >>> world._door_location(3)
+        (0, 10, 1)
+        >>> world._door_location(4)
+        (20, 10, 1)"""
         pos = {
-            'top-left': (1, 0, door_width),
-            'top-center':(self.width/2, 0, door_width),
-            'top-right': (self.width-1, 0, door_width)
+            1:(int(self.width/2), 0), # center top door
+            2:(int(self.width/2), self.height-1), # center bottom door
+            3:(0, int(self.height/2)), # center left door
+            4:(self.width-1, int(self.height/2)), # center
         }
         return pos.get(door_position)
+
+    def _draw_doors(self):
+        """Draws the doors"""
+        door = Actor(self._door_location(), self, './images/door.jpg')
+        door.draw()
+
+    def _is_occupied(self, cell_coord):
+        """Checks if a space is occupied by a tile."""
+        try:
+            actor = self.actors[cell_coord] # creates a new tile
+            return actor.is_obstacle # if obscalcle, true, else False
+        except KeyError: # if no keys
+             return False
 
     def _redraw(self):
         """Updates the world view"""
         self._draw_background()
+        self._draw_doors()
         pygame.display.update()
 
     def main_loop(self):
@@ -63,9 +89,50 @@ class World():
                 if event.type is pygame.QUIT: # if the program is closed
                     running = False
 
-if __name__ == "__main__":
-    # world = World() # initalize the world
-    # world.main_loop() # update graphics and check for events
+class Actor(object):
+    def __init__(self, cell_coordinates, world, image_loc,
+                 removable=True, is_obstacle=True):
+        self.is_obstacle = is_obstacle
+        self.removable = removable
+        # takes coordinates as a tuple
+        if world._is_occupied(cell_coordinates):
+            raise Exception('%s is already occupied!' % cell_coordinates)
+        self.cell_coordinates = cell_coordinates
+        self.world = world
+        self.image = pygame.image.load(image_loc)
+        self.image_rect = self.image.get_rect()
 
-    import doctest
-    doctest.run_docstring_examples(World._door_location, globals())
+    def draw(self):
+        cells = self.world.cells
+        cell = cells[self.cell_coordinates]
+        # add an offset so that the image will fit inside the cell border
+        x_y_coords = self.world._add_coords(cell.coordinates, (3, 3))
+        rect_dim = (self.image_rect.width, self.image_rect.height)
+        self.image_rect = pygame.Rect(x_y_coords, rect_dim)
+        screen = self.world.screen
+        screen.blit(self.image, self.image_rect)
+
+class Tile(Actor):
+    def __init__(self, cell_coordinates, world, image_location,
+                 movement_cost=0, is_unpassable=True):
+        super(ObstacleTile, self).__init__(
+            cell_coordinates, world, image_location, removable=True,
+            is_obstacle=is_unpassable)
+        self.terrain_cost = terrain_cost
+
+class Cell():
+    def __init__(self, draw_screen, coordinates, dimensions):
+        self.draw_screen = draw_screen
+        self.coordinates = coordinates
+        self.dimensions = dimensions
+
+    def draw(self):
+        self.draw_screen.blit(self.coordinates)
+
+
+if __name__ == "__main__":
+    world = World() # initalize the world
+    world.main_loop() # update graphics and check for events
+
+    # import doctest
+    # doctest.run_docstring_examples(World._door_location, globals())
