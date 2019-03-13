@@ -38,7 +38,7 @@ class World():
 
     def _init_player(self):
         """Initialize the player in a random spot on the map"""
-        self.player = Player((0, 0), self, './images/player.jpg') # create the player
+        self.player = Player([0, 0], self, './images/player.jpg') # create the player
         self.actors[(0, 0)] = self.player # add the player to the actors list in World()
         # need to randomize location, but consider not spawning in impassible objects
 
@@ -96,8 +96,8 @@ class World():
     def _is_occupied(self, cell_coord):
         """Checks if a space is occupied by a tile."""
         try:
-            actor = self.actors[cell_coord] # creates a new tile
-            return actor.is_obstacle # if obscalcle, true, else False
+            actor = self.actors[tuple(cell_coord)] # creates a new tile
+            return actor.is_obstacle # if obstacle, true, else False
         except KeyError: # if no keys
              return False
 
@@ -107,6 +107,12 @@ class World():
         self._draw_actors()
         self._draw_door()
         pygame.display.update()
+
+    def _is_in_grid(self, cell_coord):
+        """Tells whether cell_coord is valid and in range of the actual grid dimensions."""
+        valid_x = 0 <= cell_coord[0] < self.width
+        valid_y = 0 <= cell_coord[1] < self.height
+        return valid_x and valid_y
 
     def main_loop(self):
         """Update the graphics and check for events"""
@@ -120,12 +126,11 @@ class World():
                     if event.key == pygame.K_UP:
                         self.player.move(self.player.cell_coordinates, 'Up')
                     elif event.key == pygame.K_DOWN:
-                        self.player.cell_coordinates = (self.player.cell_coordinates[0], self.player.cell_coordinates[1])
-                        # self.player.move(self.player.cell_coordinates, 'Down')
+                        self.player.move(self.player.cell_coordinates, 'Down')
                     elif event.key == pygame.K_LEFT:
-                        pass
+                        self.player.move(self.player.cell_coordinates, 'Left')
                     elif event.key == pygame.K_RIGHT:
-                        pass
+                        self.player.move(self.player.cell_coordinates, 'Right')
 class Actor(object):
 
     def __init__(self, cell_coordinates, world, image_loc,
@@ -142,7 +147,7 @@ class Actor(object):
 
     def draw(self):
         cells = self.world.cells
-        cell = cells[self.cell_coordinates]
+        cell = cells[tuple(self.cell_coordinates)]
         # add an offset so that the image will fit inside the cell border
         x_y_coords = self.world._add_coords(cell.coordinates, (3, 3))
         rect_dim = (self.image_rect.width, self.image_rect.height)
@@ -176,9 +181,18 @@ class Player(Actor):
         coord: the current coordinate of the player
         direction: the direction to move the player"""
         # check if coord is valid
-        if direction == 'Down':
-            self.cell_cordinates = (coord[0], coord[1] + 1)
-            print(self.cell_cordinates)
+        if direction == 'Up':
+            new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
+        elif direction == 'Down':
+            new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
+        elif direction == 'Left':
+            new_coord = (self.cell_coordinates[0] - 1, self.cell_coordinates[1])
+        elif direction == 'Right':
+            new_coord = (self.cell_coordinates[0] + 1, self.cell_coordinates[1])
+        else:
+            pass
+        if self.is_valid(new_coord):
+            self.cell_coordinates = new_coord
 
 
 class Tile(Actor):
@@ -206,7 +220,7 @@ class Cell():
 
     def draw(self):
         """Draws a cell onto the background"""
-        self.draw_screen.blit(self.coordinates)
+        self.draw_screen.blit(tuple(self.coordinates))
 
 
 if __name__ == "__main__":
