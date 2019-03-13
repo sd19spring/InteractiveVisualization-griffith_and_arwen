@@ -39,7 +39,7 @@ class World():
     def _init_player(self):
         """Initialize the player in a random spot on the map"""
         self.player = Player([0, 0], self, './images/player.jpg') # create the player
-        self.actors[(0, 0)] = self.player # add the player to the actors list in World()
+        self.actors[0] = self.player # add the player to the actors list in World()
         # need to randomize location, but consider not spawning in impassible objects
 
     def _add_coords(self, a, b):
