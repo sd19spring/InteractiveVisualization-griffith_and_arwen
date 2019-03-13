@@ -20,3 +20,9 @@ TO DO
 * Animated Sprites
 * Joystick controller functionality
 * Tunnels between rooms
+
+## To Do
+* Add player
+* Add controls
+* Test that the door is not passable
+* Add border

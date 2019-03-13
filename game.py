@@ -6,7 +6,7 @@ class World():
     The information to make this class was heavily based on information
     learned from the ai-toolbox written by Dennis Chen."""
 
-    def __init__(self, width=20, height = 20, cell_size=50):
+    def __init__(self, width=19, height = 19, cell_size=50):
         """Initialize the world.
         width: The width of the world in cells
         height: The height of the world in cells
@@ -20,6 +20,7 @@ class World():
         self.height = height
         self.cell_size = cell_size
         self._init_cells() # creates the cells
+        self._init_player()
 
     def _draw_background(self):
         """Sets the background color"""
@@ -34,6 +35,12 @@ class World():
             for j in range(self.width): # go through all columns in the row
                 cell_coord = (i * self.cell_size, j * self.cell_size) # get the coordinate of that cell
                 self.cells[(i, j)] = Cell(self.screen, cell_coord, cell_size) # create the cell and add it to the list
+
+    def _init_player(self):
+        """Initialize the player in a random spot on the map"""
+        self.player = Player((0, 0), self, './images/player.jpg') # create the player
+        self.actors[(0, 0)] = self.player # add the player to the actors list in World()
+        # need to randomize location, but consider not spawning in impassible objects
 
     def _add_coords(self, a, b):
         """Rewrites the current location to the place it needs to go.
@@ -74,10 +81,17 @@ class World():
         }
         return pos.get(door_position)
 
-    def _draw_doors(self):
+    def _draw_door(self):
         """Draws the doors"""
-        door = Actor(self._door_location(), self, './images/door.jpg')
+        door = Actor(self._door_location(), self, './images/door.jpg') # create the door object
         door.draw()
+
+    def _draw_actors(self):
+        """Draws the actors"""
+        all_actors = self.actors.values() # gets the actor list from the actors dictionary in the World object
+        for actor in all_actors: # itterate through each actor
+            # print(self.player.cell_coordinates)
+            actor.draw() # draw each actor
 
     def _is_occupied(self, cell_coord):
         """Checks if a space is occupied by a tile."""
@@ -90,7 +104,8 @@ class World():
     def _redraw(self):
         """Updates the world view"""
         self._draw_background()
-        self._draw_doors()
+        self._draw_actors()
+        self._draw_door()
         pygame.display.update()
 
     def main_loop(self):
@@ -101,8 +116,18 @@ class World():
             for event in pygame.event.get():
                 if event.type is pygame.QUIT: # if the program is closed
                     running = False
-
+                elif event.type is pygame.KEYDOWN: # if a key is pressed
+                    if event.key == pygame.K_UP:
+                        self.player.move(self.player.cell_coordinates, 'Up')
+                    elif event.key == pygame.K_DOWN:
+                        self.player.cell_coordinates = (self.player.cell_coordinates[0], self.player.cell_coordinates[1])
+                        # self.player.move(self.player.cell_coordinates, 'Down')
+                    elif event.key == pygame.K_LEFT:
+                        pass
+                    elif event.key == pygame.K_RIGHT:
+                        pass
 class Actor(object):
+
     def __init__(self, cell_coordinates, world, image_loc,
                  removable=True, is_obstacle=True):
         self.is_obstacle = is_obstacle
@@ -110,7 +135,7 @@ class Actor(object):
         # takes coordinates as a tuple
         if world._is_occupied(cell_coordinates):
             raise Exception('%s is already occupied!' % cell_coordinates)
-        self.cell_coordinates = cell_coordinates
+        self.cell_coordinates = cell_coordinates # sets the position of the Actor
         self.world = world
         self.image = pygame.image.load(image_loc)
         self.image_rect = self.image.get_rect()
@@ -125,13 +150,53 @@ class Actor(object):
         screen = self.world.screen
         screen.blit(self.image, self.image_rect)
 
+class Player(Actor):
+    """Creates the Player to place on the map"""
+
+    def __init__(self, initial_coordinates, world, image_location):
+        """Initialize the Player.
+        initial_coordinates: the starting coordinates for the player
+        world: the map
+        image_location: file path of the image for the player"""
+        super(Player, self).__init__(
+            initial_coordinates, world, image_location, removable=False) # uses the __init__ method from Actor()
+        print(self.cell_coordinates)
+        self.cells = world.cells
+
+    def is_valid(self, coord):
+        """Checks if the space the player wants to move to can be moved to
+
+        coord: The coordinate to check if valid"""
+        return (self.world._is_in_grid(coord) # checks if in the world
+                and not self.world._is_occupied(coord)) # checks if occupied
+
+    def move(self, coord, direction):
+        """Moves the Player.
+
+        coord: the current coordinate of the player
+        direction: the direction to move the player"""
+        # check if coord is valid
+        if direction == 'Down':
+            self.cell_cordinates = (coord[0], coord[1] + 1)
+            print(self.cell_cordinates)
+
+
 class Tile(Actor):
+    """Creates a tile on to place in the world"""
+
     def __init__(self, cell_coordinates, world, image_location,
                  movement_cost=0, is_unpassable=True):
+        """Initializes the tile.
+
+        cell_cordinates: coordinates of the cell
+        world: the world object
+        image_location: file path of the image for the cell
+        movement_cost: cost to move through the cell
+        is_unpassible: if the cell can be moved through"""
         super(ObstacleTile, self).__init__(
             cell_coordinates, world, image_location, removable=True,
             is_obstacle=is_unpassable)
-        self.terrain_cost = terrain_cost
+        self.movement_cost = movement_cost
 
 class Cell():
     def __init__(self, draw_screen, coordinates, dimensions):
