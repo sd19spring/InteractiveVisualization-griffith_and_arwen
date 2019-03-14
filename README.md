@@ -22,10 +22,8 @@ TO DO
 * Tunnels between rooms
 
 ## To Do
-* Make it so holding down will continue movement
 * Make the door not passable
 * Add border
 
 ## Bugs
-* Cannot enter top left?
 * Blocks not filling up whole space
