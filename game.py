@@ -23,6 +23,7 @@ class World():
         self._init_cells() # creates the cells
         self._init_player()
         self._init_door()
+        self._init_border()
 
     def _draw_background(self):
         """Sets the background color"""
@@ -87,6 +88,23 @@ class World():
         """Initialize the door and add to actors"""
         self.door = Actor(self._door_location(), self, './images/door.jpg') # create the door object
         self.actors[tuple(self.door.cell_coordinates)] = self.door # add the player to the actors list in World()
+
+    def _init_border(self):
+        """Initialize the border and add to actors. Assumes the world is square"""
+        # self.border = Actor((1, 1), self, './images/wall.jpg')
+        # self.actors[tuple(self.border.cell_coordinates)] = self.border
+        for x in range(self.width): # go through the width of the border spaces
+            for y in range(0, self.height, self.height-1): # go through the top and bottom
+                try:
+                    self.border = Actor((x, y), self, './images/wall.jpg') # go horizontally
+                    self.actors[tuple(self.border.cell_coordinates)] = self.border
+                except TypeError: # if the space is already occupied
+                    pass
+                try:
+                    self.border = Actor((y, x), self, './images/wall.jpg') # go vertically
+                    self.actors[tuple(self.border.cell_coordinates)] = self.border
+                except TypeError: # if the space is already occupied
+                    pass
 
     def _draw_actors(self):
         """Draws the actors"""
@@ -218,9 +236,6 @@ class Player(Actor):
             pass
         if self.is_valid(new_coord):
             self.cell_coordinates = new_coord
-        # else:
-        #     self.cell_coordinates = self.cell_coordinates
-
 
 class Tile(Actor):
     """Creates a tile on to place in the world"""

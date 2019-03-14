@@ -26,4 +26,5 @@ TO DO
 * Add border
 
 ## Bugs
+* Cannot move into the starting position
 * Blocks not filling up whole space
