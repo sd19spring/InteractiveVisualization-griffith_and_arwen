@@ -22,9 +22,6 @@ TO DO
 * Tunnels between rooms
 
 ## To Do
-* Make the door not passable
-* Add border
-* Change from dictionary storage for coordinates to list (or something mutable) - Maybe two lists, where the positions correspond with one another
+* Update position of player and npc as they move
 
 ## Bugs
-* Blocks not filling up whole space

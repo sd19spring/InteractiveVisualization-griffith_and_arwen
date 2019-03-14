@@ -121,18 +121,14 @@ class World():
 
     def _init_player(self):
         """Initialize the player in a random spot on the map"""
-        self.player = Player([int(self.height/2), int(self.width/2)], self, './images/player.jpg') # create the player
-        # self.actors[tuple(self.player.cell_coordinates)] = self.player # add the player to the actors list in World()
-        # self.actors['player'] = self.player # add the player to the actors list in World()
+        self.player = Player((int(self.height/2), int(self.width/2)), self, './images/player.jpg') # create the player
         self.actors.append(self.player)
         self.actors_position.append(self.player.cell_coordinates)
         # need to randomize location, but consider not spawning in impassible objects
 
     def _init_npcs(self):
         """Initialize the npcs on the map"""
-        self.npc = Npc([2, 2], self, './images/npc1.jpg')
-        # self.actors[tuple(self.door.cell_coordinates)] = self.npc
-        # self.actors['npc'] = self.npc
+        self.npc = Npc((2, 2), self, './images/npc1.jpg')
         self.actors.append(self.npc)
         self.actors_position.append(self.npc.cell_coordinates)
 
@@ -146,11 +142,10 @@ class World():
     def _is_occupied(self, cell_coord):
         """Checks if a space is occupied by a tile."""
         try:
-            pos = self.actors_position.index(cell_coord)
-            print(cell_coord)
-            actor = self.actors[pos] # creates a new tile
+            pos = self.actors_position.index(cell_coord) # get the position of the coord in the list
+            actor = self.actors[pos] # get the actor that is at that coord
             return actor.is_obstacle # if obstacle, true, else False
-        except ValueError: # if not in list
+        except ValueError: # if the actor does not exist
             return False
 
     def _redraw(self):
@@ -254,6 +249,7 @@ class Player(Actor):
         """Checks if the space the player wants to move to can be moved to
 
         coord: The coordinate to check if valid"""
+        print('is_valid', coord)
         return (self.world._is_in_grid(coord) # checks if in the world
                 and not self.world._is_occupied(coord)) # checks if occupied
 
