@@ -39,7 +39,7 @@ class World():
 
     def _init_player(self):
         """Initialize the player in a random spot on the map"""
-        self.player = Player([0, 0], self, './images/player.jpg') # create the player
+        self.player = Player([int(self.height/2), int(self.width/2)], self, './images/player.jpg') # create the player
         self.actors[0] = self.player # add the player to the actors list in World()
         # need to randomize location, but consider not spawning in impassible objects
 
@@ -157,26 +157,6 @@ class World():
             elif pressed['right']:
                 self.player.move(self.player.cell_coordinates, 'Right')
 
-            # keys = pygame.key.get_pressed()  #checking pressed keys
-            # if keys[pygame.K_UP]:
-            #     self.player.move(self.player.cell_coordinates, 'Up')
-            # elif keys[pygame.K_DOWN]:
-            #     self.player.move(self.player.cell_coordinates, 'Down')
-            # elif keys[pygame.K_LEFT]:
-            #     self.player.move(self.player.cell_coordinates, 'Left')
-            # elif keys[pygame.K_RIGHT]:
-            #     self.player.move(self.player.cell_coordinates, 'Right')
-            # time.sleep(.5)
-
-                # elif event.type is pygame.KEYDOWN: # if a key is pressed
-                #     if event.key == pygame.K_UP:
-                #         self.player.move(self.player.cell_coordinates, 'Up')
-                #     elif event.key == pygame.K_DOWN:
-                #         self.player.move(self.player.cell_coordinates, 'Down')
-                #     elif event.key == pygame.K_LEFT:
-                #         self.player.move(self.player.cell_coordinates, 'Left')
-                #     elif event.key == pygame.K_RIGHT:
-                #         self.player.move(self.player.cell_coordinates, 'Right')
 class Actor(object):
 
     def __init__(self, cell_coordinates, world, image_loc,
