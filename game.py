@@ -16,15 +16,18 @@ class World():
         pygame.init() # initialize the pygame module
         screen_size = (height * cell_size, width * cell_size)
         self.screen = pygame.display.set_mode(screen_size)
-        self.actors = {} # initialize the actors
+        # self.actors = {} # initialize the actors
+        self.actors = []
+        self.actors_position = []
         # set the dimensions of the world
         self.width = width
         self.height = height
         self.cell_size = cell_size
         self._init_cells() # creates the cells
-        self._init_player()
         self._init_door()
         self._init_border()
+        self._init_player()
+        self._init_npcs()
 
     def _draw_background(self):
         """Sets the background color"""
@@ -52,13 +55,6 @@ class World():
         (a[0]+b[0], a[1]+b[1])
         """
         return tuple(map(sum, zip(a, b)))
-
-    def _init_player(self):
-        """Initialize the player in a random spot on the map"""
-        self.player = Player([int(self.height/2), int(self.width/2)], self, './images/player.jpg') # create the player
-        # self.actors[tuple(self.player.cell_coordinates)] = self.player # add the player to the actors list in World()
-        self.actors['player'] = self.player # add the player to the actors list in World()
-        # need to randomize location, but consider not spawning in impassible objects
 
     def _door_location(self, door_position = random.randint(1, 4)):
         """Determine the opening location, the places not to place wall
@@ -89,44 +85,78 @@ class World():
     def _init_door(self):
         """Initialize the door and add to actors"""
         self.door = Actor(self._door_location(), self, './images/door.jpg') # create the door object
-        self.actors[tuple(self.door.cell_coordinates)] = self.door # add the player to the actors list in World()
+        # self.actors[tuple(self.door.cell_coordinates)] = self.door # add the player to the actors list in World()
+        self.actors.append(self.door)
+        self.actors_position.append(self.door.cell_coordinates)
 
     def _init_border(self):
         """Initialize the border and add to actors. Assumes the world is square"""
-        # self.border = Actor((1, 1), self, './images/wall.jpg')
-        # self.actors[tuple(self.border.cell_coordinates)] = self.border
         for x in range(self.width): # go through the width of the border spaces
             for y in range(0, self.height, self.height-1): # go through the top and bottom
                 try:
                     self.border = Actor((x, y), self, './images/wall.jpg') # go horizontally
-                    self.actors[tuple(self.border.cell_coordinates)] = self.border
+                    # self.actors[tuple(self.border.cell_coordinates)] = self.border
+                    self.actors.append(self.border)
+                    self.actors_position.append(self.border.cell_coordinates)
                 except TypeError: # if the space is already occupied
                     pass
                 try:
                     self.border = Actor((y, x), self, './images/wall.jpg') # go vertically
-                    self.actors[tuple(self.border.cell_coordinates)] = self.border
+                    # self.actors[tuple(self.border.cell_coordinates)] = self.border
+                    self.actors.append(self.border)
+                    self.actors_position.append(self.border.cell_coordinates)
                 except TypeError: # if the space is already occupied
                     pass
 
+    def _init_hills(self, hill_count = random.randint(2, 5)):
+        """Initialize the pieces in the middle of the arena"""
+        # Should make hill strings
+        # Need to avoid trapping player in?
+            # Around the player
+            # Trapping map
+            # Door
+        for i in range(hill_count):
+            pass
+        pass
+
+    def _init_player(self):
+        """Initialize the player in a random spot on the map"""
+        self.player = Player([int(self.height/2), int(self.width/2)], self, './images/player.jpg') # create the player
+        # self.actors[tuple(self.player.cell_coordinates)] = self.player # add the player to the actors list in World()
+        # self.actors['player'] = self.player # add the player to the actors list in World()
+        self.actors.append(self.player)
+        self.actors_position.append(self.player.cell_coordinates)
+        # need to randomize location, but consider not spawning in impassible objects
+
+    def _init_npcs(self):
+        """Initialize the npcs on the map"""
+        self.npc = Npc([2, 2], self, './images/npc1.jpg')
+        # self.actors[tuple(self.door.cell_coordinates)] = self.npc
+        # self.actors['npc'] = self.npc
+        self.actors.append(self.npc)
+        self.actors_position.append(self.npc.cell_coordinates)
+
     def _draw_actors(self):
         """Draws the actors"""
-        all_actors = self.actors.values() # gets the actor list from the actors dictionary in the World object
+        # all_actors = self.actors.values() # gets the actor list from the actors dictionary in the World object
+        all_actors = self.actors
         for actor in all_actors: # itterate through each actor
             actor.draw() # draw each actor
 
     def _is_occupied(self, cell_coord):
         """Checks if a space is occupied by a tile."""
         try:
-            actor = self.actors[tuple(cell_coord)] # creates a new tile
+            pos = self.actors_position.index(cell_coord)
+            print(cell_coord)
+            actor = self.actors[pos] # creates a new tile
             return actor.is_obstacle # if obstacle, true, else False
-        except KeyError: # if no keys
+        except ValueError: # if not in list
             return False
 
     def _redraw(self):
         """Updates the world view"""
         self._draw_background()
         self._draw_actors()
-        # self._draw_door()
         pygame.display.update()
 
     def _is_in_grid(self, cell_coord):
@@ -246,6 +276,20 @@ class Player(Actor):
         if self.is_valid(new_coord):
             self.cell_coordinates = new_coord
 
+class Npc(Player):
+    """Creates an NPC to place in the world"""
+
+    def __init__(self, initial_coordinates, world, image_location):
+        """Initialize the NPC.
+        initial_coordinates: the starting coordinates for the NPC
+        world: the map
+        image_location: file path of the image for the NPC"""
+        super(Npc, self).__init__(
+            initial_coordinates, world, image_location) # uses the __init__ method from Player()
+
+    def is_valid(self):
+        pass
+
 class Tile(Actor):
     """Creates a tile on to place in the world"""
 
@@ -253,7 +297,7 @@ class Tile(Actor):
                  movement_cost=0, is_unpassable=True):
         """Initializes the tile.
 
-        cell_cordinates: coordinates of the cell
+        cell_coordinates: coordinates of the cell
         world: the world object
         image_location: file path of the image for the cell
         movement_cost: cost to move through the cell

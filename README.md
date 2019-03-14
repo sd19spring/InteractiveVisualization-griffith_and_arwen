@@ -24,6 +24,7 @@ TO DO
 ## To Do
 * Make the door not passable
 * Add border
+* Change from dictionary storage for coordinates to list (or something mutable) - Maybe two lists, where the positions correspond with one another
 
 ## Bugs
 * Blocks not filling up whole space
