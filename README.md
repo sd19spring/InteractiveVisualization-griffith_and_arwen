@@ -22,7 +22,10 @@ TO DO
 * Tunnels between rooms
 
 ## To Do
-* Add player
-* Add controls
-* Test that the door is not passable
+* Make it so holding down will continue movement
+* Make the door not passable
 * Add border
+
+## Bugs
+* Cannot enter top left?
+* Blocks not filling up whole space

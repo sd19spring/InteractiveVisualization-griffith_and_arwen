@@ -1,12 +1,13 @@
 import pygame
 import random
+import time
 
 class World():
     """Grid world that contains the player, wall, sludge, and the npcs.
     The information to make this class was heavily based on information
     learned from the ai-toolbox written by Dennis Chen."""
 
-    def __init__(self, width=19, height = 19, cell_size=50):
+    def __init__(self, width=13, height = 13, cell_size=50):
         """Initialize the world.
         width: The width of the world in cells
         height: The height of the world in cells
@@ -117,20 +118,77 @@ class World():
     def main_loop(self):
         """Update the graphics and check for events"""
         running = True
+        clock=pygame.time.Clock() # initialize the clock
+        pressed_up = False
+        pressed_down = False
+        pressed_left = False
+        pressed_right = False
         while running: # while running the Program
+            clock.tick(6) # set the speed of the refresh rate in FPS
             self._redraw()
             for event in pygame.event.get():
                 if event.type is pygame.QUIT: # if the program is closed
                     running = False
-                elif event.type is pygame.KEYDOWN: # if a key is pressed
-                    if event.key == pygame.K_UP:
-                        self.player.move(self.player.cell_coordinates, 'Up')
-                    elif event.key == pygame.K_DOWN:
-                        self.player.move(self.player.cell_coordinates, 'Down')
-                    elif event.key == pygame.K_LEFT:
-                        self.player.move(self.player.cell_coordinates, 'Left')
-                    elif event.key == pygame.K_RIGHT:
-                        self.player.move(self.player.cell_coordinates, 'Right')
+                elif event.type == pygame.KEYDOWN:          # check for key presses
+                    if event.key == pygame.K_LEFT:        # left arrow turns left
+                        pressed_left = True
+                        pressed_up = False
+                        pressed_down = False
+                        pressed_right = False
+                    elif event.key == pygame.K_RIGHT:     # right arrow turns right
+                        pressed_right = True
+                        pressed_up = False
+                        pressed_down = False
+                        pressed_left = False
+                    elif event.key == pygame.K_UP:        # up arrow goes up
+                        pressed_up = True
+                        pressed_down = False
+                        pressed_left = False
+                        pressed_right = False
+                    elif event.key == pygame.K_DOWN:     # down arrow goes down
+                        pressed_down = True
+                        pressed_up = False
+                        pressed_left = False
+                        pressed_right = False
+                elif event.type == pygame.KEYUP:            # check for key releases
+                    if event.key == pygame.K_LEFT:        # left arrow turns left
+                        pressed_left = False
+                    elif event.key == pygame.K_RIGHT:     # right arrow turns right
+                        pressed_right = False
+                    elif event.key == pygame.K_UP:        # up arrow goes up
+                        pressed_up = False
+                    elif event.key == pygame.K_DOWN:     # down arrow goes down
+                        pressed_down = False
+
+            if pressed_up:
+                self.player.move(self.player.cell_coordinates, 'Up')
+            elif pressed_down:
+                self.player.move(self.player.cell_coordinates, 'Down')
+            elif pressed_left:
+                self.player.move(self.player.cell_coordinates, 'Left')
+            elif pressed_right:
+                self.player.move(self.player.cell_coordinates, 'Right')
+
+            # keys = pygame.key.get_pressed()  #checking pressed keys
+            # if keys[pygame.K_UP]:
+            #     self.player.move(self.player.cell_coordinates, 'Up')
+            # elif keys[pygame.K_DOWN]:
+            #     self.player.move(self.player.cell_coordinates, 'Down')
+            # elif keys[pygame.K_LEFT]:
+            #     self.player.move(self.player.cell_coordinates, 'Left')
+            # elif keys[pygame.K_RIGHT]:
+            #     self.player.move(self.player.cell_coordinates, 'Right')
+            # time.sleep(.5)
+
+                # elif event.type is pygame.KEYDOWN: # if a key is pressed
+                #     if event.key == pygame.K_UP:
+                #         self.player.move(self.player.cell_coordinates, 'Up')
+                #     elif event.key == pygame.K_DOWN:
+                #         self.player.move(self.player.cell_coordinates, 'Down')
+                #     elif event.key == pygame.K_LEFT:
+                #         self.player.move(self.player.cell_coordinates, 'Left')
+                #     elif event.key == pygame.K_RIGHT:
+                #         self.player.move(self.player.cell_coordinates, 'Right')
 class Actor(object):
 
     def __init__(self, cell_coordinates, world, image_loc,
