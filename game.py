@@ -1,4 +1,5 @@
 import pygame
+from pygame import transform
 import random
 import time
 
@@ -7,7 +8,7 @@ class World():
     The information to make this class was heavily based on information
     learned from the ai-toolbox written by Dennis Chen."""
 
-    def __init__(self, width=13, height = 13, cell_size=50):
+    def __init__(self, width=13, height = 13, cell_size=45):
         """Initialize the world.
         width: The width of the world in cells
         height: The height of the world in cells
@@ -148,15 +149,19 @@ class World():
                     if event.key == pygame.K_UP:
                         pressed['up'] = True
                         pressed['down'] = pressed['left'] = pressed['right'] = False
+                        self.player.image = transform.rotate(self.player.image_orig, 0)
                     elif event.key == pygame.K_DOWN:
                         pressed['down'] = True
                         pressed['up'] = pressed['left'] = pressed['right'] = False
+                        self.player.image = transform.rotate(self.player.image_orig, 180)
                     elif event.key == pygame.K_LEFT:
                         pressed['left'] = True
                         pressed['up'] = pressed['down'] = pressed['right'] = False
+                        self.player.image = transform.rotate(self.player.image_orig, 90)
                     elif event.key == pygame.K_RIGHT:
                         pressed['right'] = True
                         pressed['up'] = pressed['down'] = pressed['left'] = False
+                        self.player.image = transform.rotate(self.player.image_orig, 270)
                 elif event.type == pygame.KEYUP: # check for key releases
                     if event.key == pygame.K_UP:
                         pressed['up'] = False
@@ -187,6 +192,7 @@ class Actor(object):
         self.cell_coordinates = cell_coordinates # sets the position of the Actor
         self.world = world
         self.image = pygame.image.load(image_loc)
+        self.image_orig = self.image # an original image to base off of that does not rotate
         self.image_rect = self.image.get_rect()
 
     def draw(self):
