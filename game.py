@@ -8,7 +8,7 @@ class World():
     The information to make this class was heavily based on information
     learned from the ai-toolbox written by Dennis Chen."""
 
-    def __init__(self, width=13, height = 13, cell_size=45):
+    def __init__(self, width=15, height = 15, cell_size=45):
         """Initialize the world.
         width: The width of the world in cells
         height: The height of the world in cells
@@ -56,7 +56,8 @@ class World():
     def _init_player(self):
         """Initialize the player in a random spot on the map"""
         self.player = Player([int(self.height/2), int(self.width/2)], self, './images/player.jpg') # create the player
-        self.actors[tuple(self.player.cell_coordinates)] = self.player # add the player to the actors list in World()
+        # self.actors[tuple(self.player.cell_coordinates)] = self.player # add the player to the actors list in World()
+        self.actors['player'] = self.player # add the player to the actors list in World()
         # need to randomize location, but consider not spawning in impassible objects
 
     def _door_location(self, door_position = random.randint(1, 4)):
@@ -150,6 +151,8 @@ class World():
                         pressed['up'] = True
                         pressed['down'] = pressed['left'] = pressed['right'] = False
                         self.player.image = transform.rotate(self.player.image_orig, 0)
+                        # also want to set the direction to up such that swinging a sword will go in the right direction
+                        # FUTURE
                     elif event.key == pygame.K_DOWN:
                         pressed['down'] = True
                         pressed['up'] = pressed['left'] = pressed['right'] = False
