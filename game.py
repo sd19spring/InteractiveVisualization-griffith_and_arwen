@@ -3,11 +3,8 @@ from pygame import transform
 import random
 import time
 
-class World():
-    """Grid world that contains the player, wall, sludge, and the npcs.
-    The information to make this class was heavily based on information
-    learned from the ai-toolbox written by Dennis Chen."""
-
+class Init_World():
+    """Initialize the world"""
     def __init__(self, width=15, height = 15, cell_size=45):
         """Initialize the world.
         width: The width of the world in cells
@@ -28,11 +25,6 @@ class World():
         self._init_border()
         self._init_player()
         self._init_npcs()
-
-    def _draw_background(self):
-        """Sets the background color"""
-        COLOR = (252, 216, 169) # the beige from the legend of zelda games
-        self.screen.fill(COLOR)
 
     def _init_cells(self):
         """Creates all of the cells, getting positions for each cell"""
@@ -55,6 +47,15 @@ class World():
         (a[0]+b[0], a[1]+b[1])
         """
         return tuple(map(sum, zip(a, b)))
+
+    def _is_occupied(self, cell_coord):
+        """Checks if a space is occupied by a tile."""
+        try:
+            pos = self.actors_position.index(cell_coord) # get the position of the coord in the list
+            actor = self.actors[pos] # get the actor that is at that coord
+            return actor.is_obstacle # if obstacle, true, else False
+        except ValueError: # if the actor does not exist
+            return False
 
     def _door_location(self, door_position = random.randint(1, 4)):
         """Determine the opening location, the places not to place wall
@@ -132,6 +133,20 @@ class World():
         self.actors.append(self.npc)
         self.actors_position.append(self.npc.cell_coordinates)
 
+class Update():
+    """Class to update the world for each frame"""
+    def __init__(self, world):
+        """"""
+        self.world = world
+        self.actors = world.actors
+        self.actors_position = world.actors_position
+        self.screen = world.screen
+
+    def _draw_background(self):
+        """Sets the background color"""
+        COLOR = (252, 216, 169) # the beige from the legend of zelda games
+        self.screen.fill(COLOR)
+
     def _draw_actors(self):
         """Draws the actors"""
         # all_actors = self.actors.values() # gets the actor list from the actors dictionary in the World object
@@ -164,58 +179,18 @@ class World():
         valid_x = 0 <= cell_coord[0] < self.width
         valid_y = 0 <= cell_coord[1] < self.height
         return valid_x and valid_y
+# put running the program out of class (at bottom)
 
-    def main_loop(self):
-        """Update the graphics and check for events"""
-        clock = pygame.time.Clock() # initialize the clock
-        pressed = {'up': False, 'down': False, 'left': False, 'right': False}
-        running = True
-        while running: # while running the Program
-            clock.tick(6) # set the speed of the refresh rate in FPS
+class Player_Controller():
+    """Defines a controller that takes user input to control the Player
+    object.
+    """
+    pass
 
-            for event in pygame.event.get():
-                if event.type is pygame.QUIT: # if the program is closed
-                    running = False
-                elif event.type == pygame.KEYDOWN: # check for key presses
-                    if event.key == pygame.K_UP:
-                        pressed['up'] = True
-                        pressed['down'] = pressed['left'] = pressed['right'] = False
-                        self.player.image = transform.rotate(self.player.image_orig, 0)
-                        # also want to set the direction to up such that swinging a sword will go in the right direction
-                        # FUTURE
-                    elif event.key == pygame.K_DOWN:
-                        pressed['down'] = True
-                        pressed['up'] = pressed['left'] = pressed['right'] = False
-                        self.player.image = transform.rotate(self.player.image_orig, 180)
-                    elif event.key == pygame.K_LEFT:
-                        pressed['left'] = True
-                        pressed['up'] = pressed['down'] = pressed['right'] = False
-                        self.player.image = transform.rotate(self.player.image_orig, 90)
-                    elif event.key == pygame.K_RIGHT:
-                        pressed['right'] = True
-                        pressed['up'] = pressed['down'] = pressed['left'] = False
-                        self.player.image = transform.rotate(self.player.image_orig, 270)
-                elif event.type == pygame.KEYUP: # check for key releases
-                    if event.key == pygame.K_UP:
-                        pressed['up'] = False
-                    elif event.key == pygame.K_DOWN:
-                        pressed['down'] = False
-                    elif event.key == pygame.K_LEFT:
-                        pressed['left'] = False
-                    elif event.key == pygame.K_RIGHT:
-                        pressed['right'] = False
-            if pressed['up']:
-                self.player.move(self.player.cell_coordinates, 'Up')
-            elif pressed['down']:
-                self.player.move(self.player.cell_coordinates, 'Down')
-            elif pressed['left']:
-                self.player.move(self.player.cell_coordinates, 'Left')
-            elif pressed['right']:
-                self.player.move(self.player.cell_coordinates, 'Right')
-
-            self._redraw()
-
-
+class Arrow_Keys_Controller(Player_Controller):
+    """Defines a controller that takes input from the keyboard arrow keys.
+    """
+    pass
 
 class Actor(object):
 
@@ -324,8 +299,67 @@ class Cell():
 
 
 if __name__ == "__main__":
-    world = World() # initalize the world
-    world.main_loop() # update graphics and check for events
+    running = True
+    while running:
+        world = Init_World() # initalize the world
+        update = Update(world)
+        for event in pygame.event.get():
+            if event.type is pygame.QUIT: # if the program is closed
+                running = False
+        update._redraw()
+    # main_loop() # update graphics and check for events
 
+
+
+def main_loop():
+    """Update the graphics and check for events"""
+    world = Init_World()
+    clock = pygame.time.Clock() # initialize the clock
+    pressed = {'up': False, 'down': False, 'left': False, 'right': False}
+    running = True
+    while running: # while running the Program
+        clock.tick(6) # set the speed of the refresh rate in FPS
+
+        for event in pygame.event.get():
+            if event.type is pygame.QUIT: # if the program is closed
+                running = False
+            elif event.type == pygame.KEYDOWN: # check for key presses
+                if event.key == pygame.K_UP:
+                    pressed['up'] = True
+                    pressed['down'] = pressed['left'] = pressed['right'] = False
+                    self.player.image = transform.rotate(self.player.image_orig, 0)
+                    # also want to set the direction to up such that swinging a sword will go in the right direction
+                    # FUTURE
+                elif event.key == pygame.K_DOWN:
+                    pressed['down'] = True
+                    pressed['up'] = pressed['left'] = pressed['right'] = False
+                    self.player.image = transform.rotate(self.player.image_orig, 180)
+                elif event.key == pygame.K_LEFT:
+                    pressed['left'] = True
+                    pressed['up'] = pressed['down'] = pressed['right'] = False
+                    self.player.image = transform.rotate(self.player.image_orig, 90)
+                elif event.key == pygame.K_RIGHT:
+                    pressed['right'] = True
+                    pressed['up'] = pressed['down'] = pressed['left'] = False
+                    self.player.image = transform.rotate(self.player.image_orig, 270)
+            elif event.type == pygame.KEYUP: # check for key releases
+                if event.key == pygame.K_UP:
+                    pressed['up'] = False
+                elif event.key == pygame.K_DOWN:
+                    pressed['down'] = False
+                elif event.key == pygame.K_LEFT:
+                    pressed['left'] = False
+                elif event.key == pygame.K_RIGHT:
+                    pressed['right'] = False
+        if pressed['up']:
+            self.player.move(self.player.cell_coordinates, 'Up')
+        elif pressed['down']:
+            self.player.move(self.player.cell_coordinates, 'Down')
+        elif pressed['left']:
+            self.player.move(self.player.cell_coordinates, 'Left')
+        elif pressed['right']:
+            self.player.move(self.player.cell_coordinates, 'Right')
+
+        self._redraw()
     # import doctest
     # doctest.run_docstring_examples(World._door_location, globals())
