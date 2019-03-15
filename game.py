@@ -137,6 +137,11 @@ class World():
         # all_actors = self.actors.values() # gets the actor list from the actors dictionary in the World object
         all_actors = self.actors
         for actor in all_actors: # itterate through each actor
+            # Just update the npcs and actors position
+            if type(actor) == Player:
+                pos = self.actors.index(actor) # get the position of the coord in the list
+                if self.actors_position[pos] != actor.cell_coordinates: # if the position is not updated
+                    self.actors_position[pos] = actor.cell_coordinates # update the position
             actor.draw() # draw each actor
 
     def _is_occupied(self, cell_coord):
@@ -167,7 +172,7 @@ class World():
         running = True
         while running: # while running the Program
             clock.tick(6) # set the speed of the refresh rate in FPS
-            self._redraw()
+
             for event in pygame.event.get():
                 if event.type is pygame.QUIT: # if the program is closed
                     running = False
@@ -207,6 +212,10 @@ class World():
                 self.player.move(self.player.cell_coordinates, 'Left')
             elif pressed['right']:
                 self.player.move(self.player.cell_coordinates, 'Right')
+
+            self._redraw()
+
+
 
 class Actor(object):
 
