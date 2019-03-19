@@ -133,6 +133,12 @@ class Init_World():
         self.actors.append(self.npc)
         self.actors_position.append(self.npc.cell_coordinates)
 
+    def _is_in_grid(self, cell_coord):
+        """Tells whether cell_coord is valid and in range of the actual grid dimensions."""
+        valid_x = 0 <= cell_coord[0] < self.width
+        valid_y = 0 <= cell_coord[1] < self.height
+        return valid_x and valid_y
+
 class Update():
     """Class to update the world for each frame"""
     def __init__(self, world):
@@ -174,69 +180,11 @@ class Update():
         self._draw_actors()
         pygame.display.update()
 
-    def _is_in_grid(self, cell_coord):
-        """Tells whether cell_coord is valid and in range of the actual grid dimensions."""
-        valid_x = 0 <= cell_coord[0] < self.width
-        valid_y = 0 <= cell_coord[1] < self.height
-        return valid_x and valid_y
-
-class Player_Controller():
-    """Defines a controller that takes user input to control the Player
-    object.
-    """
-    def __init__(self):
-        """Initialize the player controller"""
-        self.direction = {'up': False, 'down': False, 'left': False, 'right': False}
-
-    def reset_direction(self):
-        """Reset the pressed values"""
-        self.direction = {'up': False, 'down': False, 'left': False, 'right': False}
-
-    def set_direction (self, dir, player):
-        """Set the direction to move in"""
-        if dir == 'Up':
-            self.reset_direction
-            self.direction['up'] = True
-            player.image = transform.rotate(player.image_orig, 0)
-            # also want to set the direction to up such that swinging a sword will go in the right direction
-            # FUTURE
-        elif dir == 'Down':
-            pressed['down'] = True
-            pressed['up'] = pressed['left'] = pressed['right'] = False
-            # self.player.image = transform.rotate(self.player.image_orig, 180)
-        elif dir == 'Left':
-            pressed['left'] = True
-            pressed['up'] = pressed['down'] = pressed['right'] = False
-            # self.player.image = transform.rotate(self.player.image_orig, 90)
-        elif dir == 'Right':
-            pressed['right'] = True
-            pressed['up'] = pressed['down'] = pressed['left'] = False
-            # self.player.image = transform.rotate(self.player.image_orig, 270)
-
-class Arrow_Keys_Controller(Player_Controller):
-    """Defines a controller that takes input from the keyboard arrow keys.
-    """
-    def __init__(self):
-        """Initialize the player controller"""
-        super(Arrow_Keys_Controller, self).__init__() # uses the __init__ method from Controller()
-
-    def pressed (self, key, player):
-        """Check which key is pressed"""
-        if key == pygame.K_UP:
-            self.set_direction('Up', player)
-        elif key == pygame.K_DOWN:
-            self.set_direction('Down', player)
-        elif key == pygame.K_LEFT:
-            self.set_direction('Left', player)
-        elif key == pygame.K_RIGHT:
-            self.set_direction('Right', player)
-
-    def released (self, key):
-        """Check to see if an arrow key is released"""
-        if event.key == pygame.K_UP or pygame.K_DOWN or pygame.K_LEFT or pygame.K_RIGHT:
-            self.reset_direction()
-
-    # convert wasd to arrows
+    # def _is_in_grid(self, cell_coord):
+    #     """Tells whether cell_coord is valid and in range of the actual grid dimensions."""
+    #     valid_x = 0 <= cell_coord[0] < self.width
+    #     valid_y = 0 <= cell_coord[1] < self.height
+    #     return valid_x and valid_y
 
 class Actor():
 
@@ -279,28 +227,28 @@ class Player(Actor):
         """Checks if the space the player wants to move to can be moved to
 
         coord: The coordinate to check if valid"""
-        print('is_valid', coord)
         return (self.world._is_in_grid(coord) # checks if in the world
                 and not self.world._is_occupied(coord)) # checks if occupied
 
-    def move(self, coord, direction):
+    def move(self, direction):
         """Moves the Player.
 
-        coord: the current coordinate of the player
         direction: the direction to move the player"""
-        # check if coord is valid
-        if direction == 'Up':
+        if direction == 'up':
             new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
-        elif direction == 'Down':
+            new_image = transform.rotate(self.image_orig, 0)
+        elif direction == 'down':
             new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
-        elif direction == 'Left':
+            new_image = transform.rotate(self.image_orig, 180)
+        elif direction == 'left':
             new_coord = (self.cell_coordinates[0] - 1, self.cell_coordinates[1])
-        elif direction == 'Right':
+            new_image = transform.rotate(self.image_orig, 90)
+        elif direction == 'right':
             new_coord = (self.cell_coordinates[0] + 1, self.cell_coordinates[1])
-        else:
-            pass
-        if self.is_valid(new_coord):
+            new_image = transform.rotate(self.image_orig, 270)
+        if self.is_valid(new_coord): # check if the coord is valid
             self.cell_coordinates = new_coord
+            self.image = new_image
 
 class Npc(Player):
     """Creates an NPC to place in the world"""
@@ -343,21 +291,93 @@ class Cell():
         """Draws a cell onto the background"""
         self.draw_screen.blit(tuple(self.coordinates))
 
+class Player_Controller():
+    """Defines a controller that takes user input to control the Player
+    object.
+    """
+    def __init__(self):
+        """Initialize the player controller"""
+        self.direction = {'up': False, 'down': False, 'left': False, 'right': False}
+
+    def reset_direction(self):
+        """Reset the pressed values"""
+        self.direction = {'up': False, 'down': False, 'left': False, 'right': False}
+
+    def set_direction (self, dir):
+        """Set the direction to move in"""
+        if dir == 'up':
+            self.reset_direction()
+            self.direction['up'] = True
+            # also want to set the direction to up such that swinging a sword will go in the right direction
+            # FUTURE
+        elif dir == 'down':
+            self.reset_direction()
+            self.direction['down'] = True
+        elif dir == 'left':
+            self.reset_direction()
+            self.direction['left'] = True
+        elif dir == 'right':
+            self.reset_direction()
+            self.direction['right'] = True
+
+class Arrow_Keys_Controller(Player_Controller):
+    """Defines a controller that takes input from the keyboard arrow keys.
+    """
+    def __init__(self):
+        """Initialize the player controller"""
+        super(Arrow_Keys_Controller, self).__init__() # uses the __init__ method from Controller()
+
+    def pressed (self, key):
+        """Check which key is pressed"""
+        if key == pygame.K_UP:
+            self.set_direction('up')
+        elif key == pygame.K_DOWN:
+            self.set_direction('down')
+        elif key == pygame.K_LEFT:
+            self.set_direction('left')
+        elif key == pygame.K_RIGHT:
+            self.set_direction('right')
+
+    def released (self, key):
+        """Check to see if an arrow key is released"""
+        if key == pygame.K_UP:
+            self.direction['up'] = False
+        elif key == pygame.K_DOWN:
+            self.direction['down'] = False
+        elif key == pygame.K_LEFT:
+            self.direction['left'] = False
+        elif key == pygame.K_RIGHT:
+            self.direction['right'] = False
+
+    # convert wasd to arrows
 
 if __name__ == "__main__":
+    world = Init_World() # initalize the world
     controller = Arrow_Keys_Controller()
+    clock = pygame.time.Clock() # initialize the clock
     running = True
     while running:
-        world = Init_World() # initalize the world
+        clock.tick(30)
         update = Update(world)
         for event in pygame.event.get():
             if event.type is pygame.QUIT: # if the program is closed
                 running = False
             elif event.type == pygame.KEYDOWN: # if a key is pressed
-                controller.pressed(event.key, world.player)
+                controller.pressed(event.key)
             elif event.type == pygame.KEYUP: # if a key is released
                 controller.released(event.key)
         update._redraw()
+        # print(controller.direction)
+        try:
+            dir = list(controller.direction.keys())[list(controller.direction.values()).index(True)] # finds the direction that is currently true
+            time.sleep(.5)
+            world.player.move(dir)
+            # add a pause here to prevent multiple moves and slow movement?
+            # should stop as soon as let off the key
+        except ValueError: # if True is not in the list
+            pass
+        # world.player.move(world.player.cell_coordinates, 'up')
+        # world.player.move('up')
     # main_loop() # update graphics and check for events
 
 
@@ -369,7 +389,7 @@ def main_loop():
     pressed = {'up': False, 'down': False, 'left': False, 'right': False}
     running = True
     while running: # while running the Program
-        clock.tick(6) # set the speed of the refresh rate in FPS
+        clock.tick(30) # set the speed of the refresh rate in FPS
 
         for event in pygame.event.get():
             if event.type is pygame.QUIT: # if the program is closed
