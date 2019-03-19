@@ -182,17 +182,18 @@ class Update(Init_World):
         pygame.display.update()
 
 class Actor():
-
     def __init__(self, cell_coordinates, world, image_loc,
                  removable=True, deadly=False, is_obstacle=True):
         self.is_obstacle = is_obstacle # cancollide?
         self.removable = removable
         self.deadly = deadly # death on touch?
+        self.world = world
         # takes coordinates as a tuple
-        if world._is_occupied(cell_coordinates):
+        if self.world._is_occupied(cell_coordinates):
             raise Exception('%s is already occupied!' % cell_coordinates)
         self.cell_coordinates = cell_coordinates # sets the position of the Actor
-        self.world = world
+        self.facing = 0 # angle
+
         self.image = pygame.image.load(image_loc)
         self.image_orig = self.image # an original image to base off of that does not rotate
         self.image_rect = self.image.get_rect()
@@ -223,26 +224,26 @@ class Actor():
         if direction == 'up':
             new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
             new_image = transform.rotate(self.image_orig, 0)
-            # also want to set the direction to up such that swinging a sword will go in the right direction
-            # FUTURE
-            # IE new_facing = ????
-            # self.facing = new_facing
+            new_facing = 0
         elif direction == 'down':
             new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
             new_image = transform.rotate(self.image_orig, 180)
+            new_facing = 180
         elif direction == 'left':
             new_coord = (self.cell_coordinates[0] - 1, self.cell_coordinates[1])
             new_image = transform.rotate(self.image_orig, 90)
+            new_facing = 90
         elif direction == 'right':
             new_coord = (self.cell_coordinates[0] + 1, self.cell_coordinates[1])
             new_image = transform.rotate(self.image_orig, 270)
+            new_facing = 270
         if self.is_valid(new_coord): # check if the coord is valid
             self.cell_coordinates = new_coord
             self.image = new_image
+            self.facing = new_facing
 
 class Player(Actor):
     """Creates the Player to place on the map"""
-
     def __init__(self, initial_coordinates, world, image_location):
         """Initialize the Player.
         initial_coordinates: the starting coordinates for the player
@@ -252,9 +253,42 @@ class Player(Actor):
             initial_coordinates, world, image_location, removable=False) # uses the __init__ method from Actor()
         self.cells = world.cells
 
+    def action(self, act):
+        """Execute an action for the Player"""
+        if act == 'sword':
+            self.sword = Sword(self, self.world)
+            self.world.actors.append(self.sword)
+            self.world.actors_position.append(self.sword)
+
+
+class Sword(Actor):
+    """Sword object to attack"""
+
+    def __init__(self, player, world, image_location='./images/sword.jpg'):
+        """Initialize the sword object"""
+        self.player = player
+        self._get_initial_coordinates()
+        super(Sword, self).__init__(
+            self.cell_coordinates, world, image_location, removable=True, deadly=True, is_obstacle=False) # uses the __init__ method from Player()
+
+    def _get_initial_coordinates(self):
+        """Sword attack"""
+        if self.player.facing == 0:
+            self.cell_coordinates = (self.player.cell_coordinates[0], self.player.cell_coordinates[1] - 1)
+        elif self.player.facing == 180:
+            self.cell_coordinates = (self.player.cell_coordinates[0], self.player.cell_coordinates[1] + 1)
+        elif self.player.facing == 90:
+            self.cell_coordinates = (self.player.cell_coordinates[0] - 1, self.player.cell_coordinates[1])
+        elif self.player.facing == 270:
+            self.cell_coordinates = (self.player.cell_coordinates[0] + 1, self.player.cell_coordinates[1])
+        print(self.cell_coordinates)
+
+    # sword = Actor((coord), self.world, './images/wall.jpg') # go horizontally
+    # self.world.actors.append(sword)
+    # self.world.actors_position.append(sword.cell_coordinates)
+
 class Npc(Actor):
     """Creates an NPC to place in the world"""
-
     def __init__(self, initial_coordinates, world, image_location):
         """Initialize the NPC.
         initial_coordinates: the starting coordinates for the NPC
@@ -263,12 +297,8 @@ class Npc(Actor):
         super(Npc, self).__init__(
             initial_coordinates, world, image_location, removable=True, deadly=True, is_obstacle=False) # uses the __init__ method from Player()
 
-    def is_valid(self):
-        pass
-
 class Tile(Actor):
     """Creates a tile on to place in the world"""
-
     def __init__(self, cell_coordinates, world, image_location,
                  movement_cost=0, is_unpassable=True):
         """Initializes the tile.
@@ -309,11 +339,20 @@ if __name__ == "__main__":
             elif event.type == pygame.KEYUP: # if a key is released
                 controller.released(event.key)
         update._redraw()
-        try:
-            dir = list(controller.direction.keys())[list(controller.direction.values()).index(True)] # finds the direction that is currently true
+        try: # finds the direction that is currently true
+            dir = list(controller.direction.keys())[list(controller.direction.values()).index(True)]
             world.player.move(dir)
         except ValueError: # if True is not in the list
             pass
+        try: # finds the action that is currently true
+            act = list(controller.action.keys())[list(controller.action.values()).index(True)]
+            # world.player.action(act)
+            world.player.action(act)
+        except ValueError: # if True is not in the list
+            pass
+
+
+
 
     # import doctest
     # doctest.run_docstring_examples(World._door_location, globals())

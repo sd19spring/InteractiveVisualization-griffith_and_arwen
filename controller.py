@@ -6,12 +6,13 @@ class Player_Controller():
     def __init__(self):
         """Initialize the player controller"""
         self.direction = {'up': False, 'down': False, 'left': False, 'right': False}
+        self.action = {'sword': False} #, 'shield': False}
 
     def reset_direction(self):
         """Reset the pressed values"""
         self.direction = {'up': False, 'down': False, 'left': False, 'right': False}
 
-    def set_direction (self, dir):
+    def set_direction(self, dir):
         """Set the direction to move in"""
         if dir == 'up':
             self.reset_direction()
@@ -26,6 +27,16 @@ class Player_Controller():
             self.reset_direction()
             self.direction['right'] = True
 
+    def reset_action(self):
+        """Reset the actions"""
+        self.action = {'sword': False}
+
+    def set_action(self, act):
+        """Sets the action of the player"""
+        if act == 'sword':
+            self.reset_action()
+            self.action['sword'] = True
+
 class Arrow_Keys_Controller(Player_Controller):
     """Defines a controller that takes input from the keyboard arrow keys.
     """
@@ -36,6 +47,7 @@ class Arrow_Keys_Controller(Player_Controller):
         self.move_down = [pygame.K_DOWN, pygame.K_s, pygame.K_o]
         self.move_left = [pygame.K_LEFT, pygame.K_a]
         self.move_right = [pygame.K_RIGHT, pygame.K_d, pygame.K_e]
+        self.sword = [pygame.K_SPACE]
 
     def pressed (self, key):
         """Check which key is pressed"""
@@ -47,9 +59,11 @@ class Arrow_Keys_Controller(Player_Controller):
             self.set_direction('left')
         elif key in self.move_right:
             self.set_direction('right')
+        elif key in self.sword:
+            self.set_action('sword')
 
     def released (self, key):
-        """Check to see if an arrow key is released"""
+        """Check to see if an key is released"""
         if key in self.move_up:
             self.direction['up'] = False
         elif key in self.move_down:
@@ -58,3 +72,5 @@ class Arrow_Keys_Controller(Player_Controller):
             self.direction['left'] = False
         elif key in self.move_right:
             self.direction['right'] = False
+        elif key in self.sword:
+            self.action['sword'] = False

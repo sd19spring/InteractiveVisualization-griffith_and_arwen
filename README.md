@@ -22,9 +22,14 @@ TO DO
 * Tunnels between rooms
 
 ## To Do
-* Create game over function/class
+* Implement attack to remove npc
+* Create "game over" function/class
 * Wait to move until more inputs are recieved? (See bugs)
 * Put the lists into one dictionary (for coordinates)
+* Block function?
 
 ## Bugs
 * Can tap a key multiple times quickly and the movement is delayed
+
+## Ideas
+* Have blocks that can be broken with an axe or other action
