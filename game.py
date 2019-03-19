@@ -179,20 +179,66 @@ class Update():
         valid_x = 0 <= cell_coord[0] < self.width
         valid_y = 0 <= cell_coord[1] < self.height
         return valid_x and valid_y
-# put running the program out of class (at bottom)
 
 class Player_Controller():
     """Defines a controller that takes user input to control the Player
     object.
     """
-    pass
+    def __init__(self):
+        """Initialize the player controller"""
+        self.direction = {'up': False, 'down': False, 'left': False, 'right': False}
+
+    def reset_direction(self):
+        """Reset the pressed values"""
+        self.direction = {'up': False, 'down': False, 'left': False, 'right': False}
+
+    def set_direction (self, dir, player):
+        """Set the direction to move in"""
+        if dir == 'Up':
+            self.reset_direction
+            self.direction['up'] = True
+            player.image = transform.rotate(player.image_orig, 0)
+            # also want to set the direction to up such that swinging a sword will go in the right direction
+            # FUTURE
+        elif dir == 'Down':
+            pressed['down'] = True
+            pressed['up'] = pressed['left'] = pressed['right'] = False
+            # self.player.image = transform.rotate(self.player.image_orig, 180)
+        elif dir == 'Left':
+            pressed['left'] = True
+            pressed['up'] = pressed['down'] = pressed['right'] = False
+            # self.player.image = transform.rotate(self.player.image_orig, 90)
+        elif dir == 'Right':
+            pressed['right'] = True
+            pressed['up'] = pressed['down'] = pressed['left'] = False
+            # self.player.image = transform.rotate(self.player.image_orig, 270)
 
 class Arrow_Keys_Controller(Player_Controller):
     """Defines a controller that takes input from the keyboard arrow keys.
     """
-    pass
+    def __init__(self):
+        """Initialize the player controller"""
+        super(Arrow_Keys_Controller, self).__init__() # uses the __init__ method from Controller()
 
-class Actor(object):
+    def pressed (self, key, player):
+        """Check which key is pressed"""
+        if key == pygame.K_UP:
+            self.set_direction('Up', player)
+        elif key == pygame.K_DOWN:
+            self.set_direction('Down', player)
+        elif key == pygame.K_LEFT:
+            self.set_direction('Left', player)
+        elif key == pygame.K_RIGHT:
+            self.set_direction('Right', player)
+
+    def released (self, key):
+        """Check to see if an arrow key is released"""
+        if event.key == pygame.K_UP or pygame.K_DOWN or pygame.K_LEFT or pygame.K_RIGHT:
+            self.reset_direction()
+
+    # convert wasd to arrows
+
+class Actor():
 
     def __init__(self, cell_coordinates, world, image_loc,
                  removable=True, is_obstacle=True):
@@ -299,6 +345,7 @@ class Cell():
 
 
 if __name__ == "__main__":
+    controller = Arrow_Keys_Controller()
     running = True
     while running:
         world = Init_World() # initalize the world
@@ -306,6 +353,10 @@ if __name__ == "__main__":
         for event in pygame.event.get():
             if event.type is pygame.QUIT: # if the program is closed
                 running = False
+            elif event.type == pygame.KEYDOWN: # if a key is pressed
+                controller.pressed(event.key, world.player)
+            elif event.type == pygame.KEYUP: # if a key is released
+                controller.released(event.key)
         update._redraw()
     # main_loop() # update graphics and check for events
 
