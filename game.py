@@ -357,7 +357,7 @@ if __name__ == "__main__":
     clock = pygame.time.Clock() # initialize the clock
     running = True
     while running:
-        clock.tick(30)
+        clock.tick(8)
         update = Update(world)
         for event in pygame.event.get():
             if event.type is pygame.QUIT: # if the program is closed
@@ -367,13 +367,9 @@ if __name__ == "__main__":
             elif event.type == pygame.KEYUP: # if a key is released
                 controller.released(event.key)
         update._redraw()
-        # print(controller.direction)
         try:
             dir = list(controller.direction.keys())[list(controller.direction.values()).index(True)] # finds the direction that is currently true
-            time.sleep(.5)
             world.player.move(dir)
-            # add a pause here to prevent multiple moves and slow movement?
-            # should stop as soon as let off the key
         except ValueError: # if True is not in the list
             pass
         # world.player.move(world.player.cell_coordinates, 'up')
