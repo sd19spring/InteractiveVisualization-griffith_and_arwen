@@ -140,7 +140,16 @@ class Init_World():
         valid_y = 0 <= cell_coord[1] < self.height
         return valid_x and valid_y
 
-class Update():
+    def _is_deadly(self, cell_coord):
+        """Checks if a space is deadly."""
+        try:
+            pos = self.actors_position.index(cell_coord) # get the position of the coord in the list
+            actor = self.actors[pos] # get the actor that is at that coord
+            return actor.deadly # if obstacle, true, else False
+        except ValueError: # if the actor does not exist
+            return False
+
+class Update(Init_World):
     """Class to update the world for each frame"""
     def __init__(self, world):
         """"""
@@ -166,33 +175,19 @@ class Update():
                     self.actors_position[pos] = actor.cell_coordinates # update the position
             actor.draw() # draw each actor
 
-    def _is_occupied(self, cell_coord):
-        """Checks if a space is occupied by a tile."""
-        try:
-            pos = self.actors_position.index(cell_coord) # get the position of the coord in the list
-            actor = self.actors[pos] # get the actor that is at that coord
-            return actor.is_obstacle # if obstacle, true, else False
-        except ValueError: # if the actor does not exist
-            return False
-
     def _redraw(self):
         """Updates the world view"""
         self._draw_background()
         self._draw_actors()
         pygame.display.update()
 
-    # def _is_in_grid(self, cell_coord):
-    #     """Tells whether cell_coord is valid and in range of the actual grid dimensions."""
-    #     valid_x = 0 <= cell_coord[0] < self.width
-    #     valid_y = 0 <= cell_coord[1] < self.height
-    #     return valid_x and valid_y
-
 class Actor():
 
     def __init__(self, cell_coordinates, world, image_loc,
-                 removable=True, is_obstacle=True):
-        self.is_obstacle = is_obstacle
+                 removable=True, deadly=False, is_obstacle=True):
+        self.is_obstacle = is_obstacle # cancollide?
         self.removable = removable
+        self.deadly = deadly # death on touch?
         # takes coordinates as a tuple
         if world._is_occupied(cell_coordinates):
             raise Exception('%s is already occupied!' % cell_coordinates)
@@ -228,6 +223,8 @@ class Player(Actor):
         """Checks if the space the player wants to move to can be moved to
 
         coord: The coordinate to check if valid"""
+        if self.world._is_deadly(coord) == True:
+            return error
         return (self.world._is_in_grid(coord) # checks if in the world
                 and not self.world._is_occupied(coord)) # checks if occupied
 
@@ -255,7 +252,7 @@ class Player(Actor):
             self.cell_coordinates = new_coord
             self.image = new_image
 
-class Npc(Player):
+class Npc(Actor):
     """Creates an NPC to place in the world"""
 
     def __init__(self, initial_coordinates, world, image_location):
@@ -264,7 +261,7 @@ class Npc(Player):
         world: the map
         image_location: file path of the image for the NPC"""
         super(Npc, self).__init__(
-            initial_coordinates, world, image_location) # uses the __init__ method from Player()
+            initial_coordinates, world, image_location, removable=True, deadly=True, is_obstacle=False) # uses the __init__ method from Player()
 
     def is_valid(self):
         pass
