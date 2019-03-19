@@ -207,18 +207,6 @@ class Actor():
         screen = self.world.screen
         screen.blit(self.image, self.image_rect)
 
-class Player(Actor):
-    """Creates the Player to place on the map"""
-
-    def __init__(self, initial_coordinates, world, image_location):
-        """Initialize the Player.
-        initial_coordinates: the starting coordinates for the player
-        world: the map
-        image_location: file path of the image for the player"""
-        super(Player, self).__init__(
-            initial_coordinates, world, image_location, removable=False) # uses the __init__ method from Actor()
-        self.cells = world.cells
-
     def is_valid(self, coord):
         """Checks if the space the player wants to move to can be moved to
 
@@ -229,7 +217,7 @@ class Player(Actor):
                 and not self.world._is_occupied(coord)) # checks if occupied
 
     def move(self, direction):
-        """Moves the Player.
+        """Moves an actor.
 
         direction: the direction to move the player"""
         if direction == 'up':
@@ -251,6 +239,18 @@ class Player(Actor):
         if self.is_valid(new_coord): # check if the coord is valid
             self.cell_coordinates = new_coord
             self.image = new_image
+
+class Player(Actor):
+    """Creates the Player to place on the map"""
+
+    def __init__(self, initial_coordinates, world, image_location):
+        """Initialize the Player.
+        initial_coordinates: the starting coordinates for the player
+        world: the map
+        image_location: file path of the image for the player"""
+        super(Player, self).__init__(
+            initial_coordinates, world, image_location, removable=False) # uses the __init__ method from Actor()
+        self.cells = world.cells
 
 class Npc(Actor):
     """Creates an NPC to place in the world"""
