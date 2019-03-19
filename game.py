@@ -326,27 +326,31 @@ class Arrow_Keys_Controller(Player_Controller):
     def __init__(self):
         """Initialize the player controller"""
         super(Arrow_Keys_Controller, self).__init__() # uses the __init__ method from Controller()
+        self.move_up = [pygame.K_UP, pygame.K_w, pygame.K_COMMA]
+        self.move_down = [pygame.K_DOWN, pygame.K_s, pygame.K_o]
+        self.move_left = [pygame.K_LEFT, pygame.K_a]
+        self.move_right = [pygame.K_RIGHT, pygame.K_d, pygame.K_e]
 
     def pressed (self, key):
         """Check which key is pressed"""
-        if key == pygame.K_UP:
+        if key in self.move_up:
             self.set_direction('up')
-        elif key == pygame.K_DOWN:
+        elif key in self.move_down:
             self.set_direction('down')
-        elif key == pygame.K_LEFT:
+        elif key in self.move_left:
             self.set_direction('left')
-        elif key == pygame.K_RIGHT:
+        elif key in self.move_right:
             self.set_direction('right')
 
     def released (self, key):
         """Check to see if an arrow key is released"""
-        if key == pygame.K_UP:
+        if key in self.move_up:
             self.direction['up'] = False
-        elif key == pygame.K_DOWN:
+        elif key in self.move_down:
             self.direction['down'] = False
-        elif key == pygame.K_LEFT:
+        elif key in self.move_left:
             self.direction['left'] = False
-        elif key == pygame.K_RIGHT:
+        elif key in self.move_right:
             self.direction['right'] = False
 
     # convert wasd to arrows
@@ -372,61 +376,6 @@ if __name__ == "__main__":
             world.player.move(dir)
         except ValueError: # if True is not in the list
             pass
-        # world.player.move(world.player.cell_coordinates, 'up')
-        # world.player.move('up')
-    # main_loop() # update graphics and check for events
 
-
-
-def main_loop():
-    """Update the graphics and check for events"""
-    world = Init_World()
-    clock = pygame.time.Clock() # initialize the clock
-    pressed = {'up': False, 'down': False, 'left': False, 'right': False}
-    running = True
-    while running: # while running the Program
-        clock.tick(30) # set the speed of the refresh rate in FPS
-
-        for event in pygame.event.get():
-            if event.type is pygame.QUIT: # if the program is closed
-                running = False
-            elif event.type == pygame.KEYDOWN: # check for key presses
-                if event.key == pygame.K_UP:
-                    pressed['up'] = True
-                    pressed['down'] = pressed['left'] = pressed['right'] = False
-                    self.player.image = transform.rotate(self.player.image_orig, 0)
-                    # also want to set the direction to up such that swinging a sword will go in the right direction
-                    # FUTURE
-                elif event.key == pygame.K_DOWN:
-                    pressed['down'] = True
-                    pressed['up'] = pressed['left'] = pressed['right'] = False
-                    self.player.image = transform.rotate(self.player.image_orig, 180)
-                elif event.key == pygame.K_LEFT:
-                    pressed['left'] = True
-                    pressed['up'] = pressed['down'] = pressed['right'] = False
-                    self.player.image = transform.rotate(self.player.image_orig, 90)
-                elif event.key == pygame.K_RIGHT:
-                    pressed['right'] = True
-                    pressed['up'] = pressed['down'] = pressed['left'] = False
-                    self.player.image = transform.rotate(self.player.image_orig, 270)
-            elif event.type == pygame.KEYUP: # check for key releases
-                if event.key == pygame.K_UP:
-                    pressed['up'] = False
-                elif event.key == pygame.K_DOWN:
-                    pressed['down'] = False
-                elif event.key == pygame.K_LEFT:
-                    pressed['left'] = False
-                elif event.key == pygame.K_RIGHT:
-                    pressed['right'] = False
-        if pressed['up']:
-            self.player.move(self.player.cell_coordinates, 'Up')
-        elif pressed['down']:
-            self.player.move(self.player.cell_coordinates, 'Down')
-        elif pressed['left']:
-            self.player.move(self.player.cell_coordinates, 'Left')
-        elif pressed['right']:
-            self.player.move(self.player.cell_coordinates, 'Right')
-
-        self._redraw()
     # import doctest
     # doctest.run_docstring_examples(World._door_location, globals())
