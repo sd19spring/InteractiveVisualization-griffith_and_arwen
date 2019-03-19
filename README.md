@@ -22,6 +22,9 @@ TO DO
 * Tunnels between rooms
 
 ## To Do
-* Update position of player and npc as they move
+* Update organization of code
+* Wait to move until more inputs are recieved? (See bugs)
+* Put the lists into one dictionary (for coordinates)
 
 ## Bugs
+* Can tap a key multiple times quickly and the movement is delayed
