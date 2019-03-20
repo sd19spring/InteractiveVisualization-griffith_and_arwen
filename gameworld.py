@@ -23,6 +23,7 @@ class Init_World():
         self._init_border()
         self._init_player()
         self._init_npcs()
+        self._init_hills()
 
     def _init_cells(self):
         """Creates all of the cells, getting positions for each cell"""
@@ -109,14 +110,9 @@ class Init_World():
 
     def _init_hills(self, hill_count = random.randint(2, 5)):
         """Initialize the pieces in the middle of the arena"""
-        # Should make hill strings
-        # Need to avoid trapping player in?
-            # Around the player
-            # Trapping map
-            # Door
-        for i in range(hill_count):
-            pass
-        pass
+        self.hill = actors.Hill((2, 10), self, './images/hill.jpg')
+        self.actors.append(self.hill)
+        self.actors_position.append(self.hill.cell_coordinates)
 
     def _init_player(self):
         """Initialize the player in a random spot on the map
@@ -178,7 +174,7 @@ class Update(Init_World):
         all_actors = self.actors
         for actor in all_actors: # itterate through each actor
             # Just update the npcs and actors position
-            if type(actor) == actors.Player or type(actor) == actors.Npc:
+            if type(actor) == actors.Player or type(actor) == actors.Npc or type(actor) == actors.Hill:
                 pos = self.actors.index(actor) # get the position of the coord in the list
                 if self.actors_position[pos] != actor.cell_coordinates: # if the position is not updated
                     self.actors_position[pos] = actor.cell_coordinates # update the position

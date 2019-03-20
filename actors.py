@@ -45,7 +45,7 @@ class Actor():
 
         coord: The coordinate to check if valid"""
         if self.world._is_deadly(coord) == True:
-            return error
+            return False
         return (self.world._is_in_grid(coord) # checks if in the world
                 and not self.world._is_occupied(coord)) # checks if occupied
 
@@ -145,6 +145,16 @@ class Npc(Actor):
         super(Npc, self).__init__(
             initial_coordinates, world, image_location, removable=True, deadly=True, is_obstacle=False) # uses the __init__ method from Player()
         self.health = health
+
+class Hill(Actor):
+    """Creates a hill to place in the world"""
+    def __init__(self, initial_coordinates, world, image_location):
+        """Initialize the Hill.
+        initial_coordinates: the starting coordinates for the Hill
+        world: the map
+        image_location: file path of the image for the hill"""
+        super(Hill, self).__init__(
+            initial_coordinates, world, image_location, removable=False, deadly=True, is_obstacle=True)
 
 class Tile(Actor):
     """Creates a tile on to place in the world"""
