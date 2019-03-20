@@ -1,6 +1,7 @@
 import pygame
 import gameworld
 from pygame import transform
+import time
 
 class Cell():
     def __init__(self, draw_screen, coordinates, dimensions):
@@ -20,8 +21,8 @@ class Actor():
         self.deadly = deadly # death on touch?
         self.world = world
         # takes coordinates as a tuple
-        if self.world._is_occupied(cell_coordinates):
-            raise Exception('%s is already occupied!' % cell_coordinates)
+        # if self.world._is_occupied(cell_coordinates):
+        #     raise Exception('%s is already occupied!' % cell_coordinates)
         self.cell_coordinates = cell_coordinates # sets the position of the Actor
         self.facing = 0 # angle
 
@@ -83,6 +84,7 @@ class Player(Actor):
         super(Player, self).__init__(
             initial_coordinates, world, image_location, removable=False) # uses the __init__ method from Actor()
         self.cells = world.cells
+        self.image_orig = self.image # an original image to base off of that does not rotate
 
     def action(self, act):
         """Execute an action for the Player"""
@@ -90,36 +92,47 @@ class Player(Actor):
             self.sword = Sword(self, self.world)
 
 
-class Sword():
+class Sword(Player):
     """Sword object to attack"""
 
-    def __init__(self, player, world):
+    def __init__(self, player, world, image_location = './images/sword.jpg'):
         """Initialize the sword object"""
-        self.player = player
-        self.world = world
-        self._get_initial_coordinates()
+        super(Sword, self).__init__(
+            player.cell_coordinates, world, image_location) # uses the __init__ method from Actor()
+        self.facing = player.facing
+        self._get_coordinates()
         self._swing()
 
-    def _get_initial_coordinates(self):
+    def _get_coordinates(self):
         """Sword attack"""
-        if self.player.facing == 0:
-            self.cell_coordinates = (self.player.cell_coordinates[0], self.player.cell_coordinates[1] - 1)
-        elif self.player.facing == 180:
-            self.cell_coordinates = (self.player.cell_coordinates[0], self.player.cell_coordinates[1] + 1)
-        elif self.player.facing == 90:
-            self.cell_coordinates = (self.player.cell_coordinates[0] - 1, self.player.cell_coordinates[1])
-        elif self.player.facing == 270:
-            self.cell_coordinates = (self.player.cell_coordinates[0] + 1, self.player.cell_coordinates[1])
+        if self.facing == 0:
+            self.cell_coordinates = (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
+            self.image = transform.rotate(self.image_orig, 0)
+        elif self.facing == 180:
+            self.cell_coordinates = (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
+            self.image = transform.rotate(self.image_orig, 180)
+        elif self.facing == 90:
+            self.cell_coordinates = (self.cell_coordinates[0] - 1, self.cell_coordinates[1])
+            self.image = transform.rotate(self.image_orig, 90)
+        elif self.facing == 270:
+            self.cell_coordinates = (self.cell_coordinates[0] + 1, self.cell_coordinates[1])
+            self.image = transform.rotate(self.image_orig, 270)
 
     def _swing(self):
         """Check if the sword hits an npc"""
-        # self.player.image_loc =
+        self.world.actors_position.append(self.cell_coordinates) # add the sword
+        self.world.actors.append(self)
+        gameworld.Update(self.world)._redraw() # draw the sword
+        time.sleep(.5) # how long to swing
+        self.world.actors_position.remove(self.cell_coordinates) # remove the sword
+        self.world.actors.remove(self)
+
         pos = self.world.actors_position.index(self.cell_coordinates) # get the position of the coord in the list
         actor = self.world.actors[pos] # get the actor that is at that coord
         if type(actor) == Npc:
             actor.health += -1 # remove one health
             if actor.health <= 0: # if dead
-                del self.world.actors_position[pos]
+                del self.world.actors_position[pos] # get rid of the swing from the list of actors
                 del self.world.actors[pos]
 
 class Npc(Actor):

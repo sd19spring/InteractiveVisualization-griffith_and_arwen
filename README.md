@@ -24,9 +24,11 @@ TO DO
 ## To Do
 * Implement image for attack
 * Create "game over" function/class
+* Just touching the arrow keys should only turn them (or some way to turn) - way to count how long a key has been pressed?
 * Wait to move until more inputs are recieved? (See bugs)
 * Put the lists into one dictionary (for coordinates)
 * Block function?
+* Get rid of removable status (not necessary?)
 
 ## Bugs
 * Can tap a key multiple times quickly and the movement is delayed
