@@ -45,7 +45,7 @@ class Actor():
 
         coord: The coordinate to check if valid"""
         if self.world._is_deadly(coord) == True:
-            return False
+            return Error # rewrite
         return (self.world._is_in_grid(coord) # checks if in the world
                 and not self.world._is_occupied(coord)) # checks if occupied
 
@@ -154,7 +154,7 @@ class Hill(Actor):
         world: the map
         image_location: file path of the image for the hill"""
         super(Hill, self).__init__(
-            initial_coordinates, world, image_location, removable=False, deadly=True, is_obstacle=True)
+            initial_coordinates, world, image_location, removable=False)
 
 class Tile(Actor):
     """Creates a tile on to place in the world"""

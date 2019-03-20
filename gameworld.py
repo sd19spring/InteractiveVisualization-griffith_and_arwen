@@ -21,9 +21,10 @@ class Init_World():
         self._init_cells() # creates the cells
         self._init_door()
         self._init_border()
-        self._init_player()
-        self._init_npcs()
         self._init_hills()
+        self._init_player()
+        self._init_hills()
+        self._init_npcs()
 
     def _init_cells(self):
         """Creates all of the cells, getting positions for each cell"""
