@@ -128,13 +128,12 @@ class Init_World():
         # need to randomize location, but consider not spawning in impassible objects
 
     def _npc_locations(self, npc_position = random.randint(1, 4)): #will need to change to reflect number of squares on map
-        """Determines the spawn locations of NPCs in the room
-        """
+        """Determines the spawn locations of NPCs in the room"""
         pos = {
             1: (2, 2),
-            2: (2, 8),
-            3: (4, 2),
-            4: (13, 13),
+            2: (2, 12),
+            3: (12, 2),
+            4: (12, 12),
         }
         return pos.get(npc_position)
 
