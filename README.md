@@ -22,7 +22,7 @@ TO DO
 * Tunnels between rooms
 
 ## To Do
-* Implement attack to remove npc
+* Implement image for attack
 * Create "game over" function/class
 * Wait to move until more inputs are recieved? (See bugs)
 * Put the lists into one dictionary (for coordinates)

@@ -169,7 +169,7 @@ class Update(Init_World):
         all_actors = self.actors
         for actor in all_actors: # itterate through each actor
             # Just update the npcs and actors position
-            if type(actor) == Player:
+            if type(actor) == Player or type(actor) == Npc:
                 pos = self.actors.index(actor) # get the position of the coord in the list
                 if self.actors_position[pos] != actor.cell_coordinates: # if the position is not updated
                     self.actors_position[pos] = actor.cell_coordinates # update the position
@@ -257,19 +257,17 @@ class Player(Actor):
         """Execute an action for the Player"""
         if act == 'sword':
             self.sword = Sword(self, self.world)
-            self.world.actors.append(self.sword)
-            self.world.actors_position.append(self.sword)
 
 
-class Sword(Actor):
+class Sword():
     """Sword object to attack"""
 
-    def __init__(self, player, world, image_location='./images/sword.jpg'):
+    def __init__(self, player, world):
         """Initialize the sword object"""
         self.player = player
+        self.world = world
         self._get_initial_coordinates()
-        super(Sword, self).__init__(
-            self.cell_coordinates, world, image_location, removable=True, deadly=True, is_obstacle=False) # uses the __init__ method from Player()
+        self._swing()
 
     def _get_initial_coordinates(self):
         """Sword attack"""
@@ -281,21 +279,27 @@ class Sword(Actor):
             self.cell_coordinates = (self.player.cell_coordinates[0] - 1, self.player.cell_coordinates[1])
         elif self.player.facing == 270:
             self.cell_coordinates = (self.player.cell_coordinates[0] + 1, self.player.cell_coordinates[1])
-        print(self.cell_coordinates)
 
-    # sword = Actor((coord), self.world, './images/wall.jpg') # go horizontally
-    # self.world.actors.append(sword)
-    # self.world.actors_position.append(sword.cell_coordinates)
+    def _swing(self):
+        """Check if the sword hits an npc"""
+        pos = self.world.actors_position.index(self.cell_coordinates) # get the position of the coord in the list
+        actor = self.world.actors[pos] # get the actor that is at that coord
+        if type(actor) == Npc:
+            actor.health += -1 # remove one health
+            if actor.health <= 0: # if dead
+                del self.world.actors_position[pos]
+                del self.world.actors[pos]
 
 class Npc(Actor):
     """Creates an NPC to place in the world"""
-    def __init__(self, initial_coordinates, world, image_location):
+    def __init__(self, initial_coordinates, world, image_location, health = 2):
         """Initialize the NPC.
         initial_coordinates: the starting coordinates for the NPC
         world: the map
         image_location: file path of the image for the NPC"""
         super(Npc, self).__init__(
             initial_coordinates, world, image_location, removable=True, deadly=True, is_obstacle=False) # uses the __init__ method from Player()
+        self.health = health
 
 class Tile(Actor):
     """Creates a tile on to place in the world"""
