@@ -7,7 +7,7 @@ import controller
 if __name__ == "__main__":
     world = gameworld.Init_World() # initalize the world
     controller = controller.Arrow_Keys_Controller()
-    clock = pygame.time     .Clock() # initialize the clock
+    clock = pygame.time.Clock() # initialize the clock
     running = True
     while running:
         clock.tick(8)

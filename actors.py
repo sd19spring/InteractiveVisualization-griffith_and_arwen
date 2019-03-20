@@ -104,7 +104,7 @@ class Sword(Player):
         self._swing()
 
     def _get_coordinates(self):
-        """Sword attack"""
+        """Find the space immediately in front of the player to swing in"""
         if self.facing == 0:
             self.cell_coordinates = (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
             self.image = transform.rotate(self.image_orig, 0)
@@ -129,8 +129,8 @@ class Sword(Player):
 
         pos = self.world.actors_position.index(self.cell_coordinates) # get the position of the coord in the list
         actor = self.world.actors[pos] # get the actor that is at that coord
-        if type(actor) == Npc:
-            actor.health += -1 # remove one health
+        if actor.removable == True:
+            actor.health += -1 # remove one health, only exists if the item is removable
             if actor.health <= 0: # if dead
                 del self.world.actors_position[pos] # get rid of the swing from the list of actors
                 del self.world.actors[pos]
@@ -145,6 +145,11 @@ class Npc(Actor):
         super(Npc, self).__init__(
             initial_coordinates, world, image_location, removable=True, deadly=True, is_obstacle=False) # uses the __init__ method from Player()
         self.health = health
+
+class Grunt(Npc):
+    """Basic NPC that walks back and forth until it hits an obstacle,
+    then it turns around and walks back to its starting position."""
+    pass
 
 class Hill(Actor):
     """Creates a hill to place in the world"""
