@@ -12,7 +12,6 @@ class Init_World():
         pygame.init() # initialize the pygame module
         screen_size = (height * cell_size, width * cell_size)
         self.screen = pygame.display.set_mode(screen_size)
-        # self.actors = {} # initialize the actors
         self.actors = []
         self.actors_position = []
         # set the dimensions of the world
@@ -120,15 +119,28 @@ class Init_World():
         pass
 
     def _init_player(self):
-        """Initialize the player in a random spot on the map"""
+        """Initialize the player in a random spot on the map
+
+        TO DO: randomize spawn location"""
         self.player = actors.Player((int(self.height/2), int(self.width/2)), self, './images/player.jpg') # create the player
         self.actors.append(self.player)
         self.actors_position.append(self.player.cell_coordinates)
         # need to randomize location, but consider not spawning in impassible objects
 
+    def _npc_locations(self, npc_position = random.randint(1, 4)): #will need to change to reflect number of squares on map
+        """Determines the spawn locations of NPCs in the room
+        """
+        pos = {
+            1: (2, 2),
+            2: (2, 8),
+            3: (4, 2),
+            4: (13, 13),
+        }
+        return pos.get(npc_position)
+
     def _init_npcs(self):
         """Initialize the npcs on the map"""
-        self.npc = actors.Npc((2, 2), self, './images/npc1.jpg')
+        self.npc = actors.Npc(self._npc_locations(), self, './images/npc1.jpg')
         self.actors.append(self.npc)
         self.actors_position.append(self.npc.cell_coordinates)
 
