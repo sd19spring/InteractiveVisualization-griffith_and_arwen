@@ -20,13 +20,12 @@ TO DO
 * Animated Sprites
 * Joystick controller functionality
 * Tunnels between rooms
+* Create "game over" screen with restart
+* Ability to block
 
 ## To Do
-* Create "game over" function/class
 * Just touching the arrow keys should only turn them (or some way to turn) - way to count how long a key has been pressed?
-* Wait to move until more inputs are received? (See bugs)
 * Put the lists into one dictionary (for coordinates)
-* Block function?
 
 ## Bugs
 
