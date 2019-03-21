@@ -24,6 +24,9 @@ TO DO
 * Ability to block
 
 ## To Do
+* Going into a new room should start you in the door way
+* The place you just came from should just be blank
+* There should be a new door in the room
 * Just touching the arrow keys should only turn them (or some way to turn) - way to count how long a key has been pressed?
 * Put the lists into one dictionary (for coordinates)
 
