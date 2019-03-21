@@ -58,7 +58,7 @@ class Init_World():
         except ValueError: # if the actor does not exist
             return False
 
-    def _door_location(self, door_position = random.randint(1, 4)):
+    def _get_door_location(self, door_position = random.randint(1, 4)):
         """Determine the opening location, the places not to place wall
         tiles as a border
         door_position: The position of the door based on a number. 1:top,
@@ -82,14 +82,21 @@ class Init_World():
             3:(0, int(self.height/2)), # center left door
             4:(int(self.width-1), int(self.height/2)), # center
         }
-        return pos.get(door_position)
+        self.door_position = pos.get(door_position)
 
     def _init_door(self):
         """Initialize the door and add to actors"""
-        self.door = actors.Actor(self._door_location(), self, './images/door.jpg') # create the door object
+        self._get_door_location()
+        self.door = actors.Actor(self.door_position, self, './images/door.jpg') # create the door object
         # self.actors[tuple(self.door.cell_coordinates)] = self.door # add the player to the actors list in World()
         self.actors.append(self.door)
         self.actors_position.append(self.door.cell_coordinates)
+
+    def open_door(self):
+        """Replace the door with an open door"""
+        # door is the first item added
+        del self.actors_position[0]
+        del self.actors[0]
 
     def _init_border(self):
         """Initialize the border and add to actors. Assumes the world is square"""
@@ -126,9 +133,7 @@ class Init_World():
             del place
 
     def _init_player(self):
-        """Initialize the player in a random spot on the map
-
-        TO DO: randomize spawn location"""
+        """Initialize the player at the center of the map"""
         self.player = actors.Player((int(self.height/2), int(self.width/2)), self, './images/player.jpg') # create the player
         self.actors.append(self.player)
         self.actors_position.append(self.player.cell_coordinates)
@@ -183,7 +188,7 @@ class Update(Init_World):
         """Draws the actors"""
         for actor in self.actors: # itterate through each actor
             # Just update the npcs and actors position
-            if type(actor) == actors.Player or type(actor) == actors.Npc:
+            if type(actor) == actors.Player or type(actor) == actors.Npc or type(actor) == actors.Grunt:
                 pos = self.actors.index(actor) # get the position of the coord in the list
                 if self.actors_position[pos] != actor.cell_coordinates: # if the position is not updated
                     self.actors_position[pos] = actor.cell_coordinates # update the position
@@ -191,13 +196,16 @@ class Update(Init_World):
 
     def _check_clear(self):
         """Checks if the world is clear of npcs"""
+        if self.world.cleared == True: # if have already cleared the world
+            return
+        # check if there are npcs in the world
+        npc = False
         for actor in self.actors:
-            # check if there are npcs in the
             if type(actor) == actors.Grunt or type(actor) == actors.Npc:
-                self.world.cleared = False
-            else:
-                self.world.cleared = True
-
+                npc = True
+        if not npc:
+            self.world.cleared = True
+            self.world.open_door()
     def _redraw(self):
         """Updates the world view"""
         self._draw_background()
