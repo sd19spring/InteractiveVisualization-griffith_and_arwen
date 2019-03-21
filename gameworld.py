@@ -61,11 +61,7 @@ class Init_World():
 
     def _get_door_location(self):
         """Determine the opening location, the places not to place wall
-        tiles as a border
-        door_position: The position of the door based on a number. 1:top,
-        2:bottom, 3: left, 4:right
-
-        returns: Tuple of the position of the opening"""
+        tiles as a border"""
         pos = {
             0:(int(self.width/2), 0), # center top door
             90:(0, int(self.height/2)), # center left door
@@ -73,7 +69,6 @@ class Init_World():
             270:(int(self.width-1), int(self.height/2)), # center right door
         }
         self.door_position = pos.get(self.door_side)
-        print(self.door_side)
 
     def _init_door(self):
         """Initialize the door and add to actors"""
