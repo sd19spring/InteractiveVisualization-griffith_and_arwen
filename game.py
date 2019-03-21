@@ -15,10 +15,6 @@ class Game():
     def check_events(self, event):
         """Check the events"""
         if event.type is pygame.QUIT: # if the program is closed
-            # if game.over == False?:
-                #this
-            # else:
-                # this and this
             self.world.running = False
         elif event.type == pygame.KEYDOWN: # if a key is pressed
             self.controller.pressed(event.key)
@@ -37,13 +33,13 @@ class Game():
         """Checks for an active action"""
         try: # finds the action that is currently true
             act = list(self.controller.action.keys())[list(self.controller.action.values()).index(True)]
-            # world.player.action(act)
             self.world.player.action(act)
         except ValueError: # if True is not in the list
             pass
 
     def game_over(self):
         pass
+        # activate your sword to play again
 
 if __name__ == "__main__":
     game = Game()

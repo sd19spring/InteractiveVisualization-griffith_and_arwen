@@ -25,6 +25,7 @@ class Init_World():
         self._init_player()
         self._init_npcs()
         self.running = True # set the program to run
+        self.cleared = False # room cleared to false
 
     def _init_cells(self):
         """Creates all of the cells, getting positions for each cell"""
@@ -180,9 +181,7 @@ class Update(Init_World):
 
     def _draw_actors(self):
         """Draws the actors"""
-        # all_actors = self.actors.values() # gets the actor list from the actors dictionary in the World object
-        all_actors = self.actors
-        for actor in all_actors: # itterate through each actor
+        for actor in self.actors: # itterate through each actor
             # Just update the npcs and actors position
             if type(actor) == actors.Player or type(actor) == actors.Npc:
                 pos = self.actors.index(actor) # get the position of the coord in the list
@@ -190,8 +189,18 @@ class Update(Init_World):
                     self.actors_position[pos] = actor.cell_coordinates # update the position
             actor.draw() # draw each actor
 
+    def _check_clear(self):
+        """Checks if the world is clear of npcs"""
+        for actor in self.actors:
+            # check if there are npcs in the
+            if type(actor) == actors.Grunt or type(actor) == actors.Npc:
+                self.world.cleared = False
+            else:
+                self.world.cleared = True
+
     def _redraw(self):
         """Updates the world view"""
         self._draw_background()
         self._draw_actors()
+        self._check_clear()
         pygame.display.update()

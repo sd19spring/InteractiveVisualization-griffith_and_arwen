@@ -29,7 +29,6 @@ TO DO
 * Block function?
 
 ## Bugs
-* Can tap a key multiple times quickly and the movement is delayed
 
 ## Ideas
 * Have blocks that can be broken with an axe or other action. They can also
