@@ -93,20 +93,18 @@ class Init_World():
         """Initialize the border and add to actors. Assumes the world is square"""
         for x in range(self.width): # go through the width of the border spaces
             for y in range(0, self.height, self.height-1): # go through the top and bottom
-                try:
+                if not self._is_occupied((x, y)):
                     self.border = actors.Actor((x, y), self, './images/wall.jpg') # go horizontally
                     # self.actors[tuple(self.border.cell_coordinates)] = self.border
                     self.actors.append(self.border)
                     self.actors_position.append(self.border.cell_coordinates)
-                except TypeError: # if the space is already occupied
-                    pass
-                try:
+                else: pass
+                if not self._is_occupied((y, x)):
                     self.border = actors.Actor((y, x), self, './images/wall.jpg') # go vertically
                     # self.actors[tuple(self.border.cell_coordinates)] = self.border
                     self.actors.append(self.border)
                     self.actors_position.append(self.border.cell_coordinates)
-                except TypeError: # if the space is already occupied
-                    pass
+                else: pass
 
     def _init_hills(self, hill_count = random.randint(2, 5)):
         """Initialize a random number of hills in random places"""
