@@ -15,11 +15,23 @@ class Game():
     def check_events(self, event):
         """Check the events"""
         if event.type is pygame.QUIT: # if the program is closed
+            # if game.over == False?:
+                #this
+            # else:
+                # this and this
             self.world.running = False
         elif event.type == pygame.KEYDOWN: # if a key is pressed
             self.controller.pressed(event.key)
         elif event.type == pygame.KEYUP: # if a key is released
             self.controller.released(event.key)
+
+    def check_actions(self):
+        """Checks for movement and other actions to see which is currently true"""
+        try: # finds the direction that is currently true
+            dir = list(self.controller.direction.keys())[list(self.controller.direction.values()).index(True)]
+            self.world.player.move(dir)
+        except ValueError: # if True is not in the list
+            pass
 
     def game_over(self):
         pass
@@ -32,11 +44,7 @@ if __name__ == "__main__":
         for event in pygame.event.get():
             game.check_events(event) # check the events
         update._redraw()
-        try: # finds the direction that is currently true
-            dir = list(game.controller.direction.keys())[list(game.controller.direction.values()).index(True)]
-            game.world.player.move(dir)
-        except ValueError: # if True is not in the list
-            pass
+        game.check_actions()
         try: # finds the action that is currently true
             act = list(game.controller.action.keys())[list(game.controller.action.values()).index(True)]
             # world.player.action(act)
