@@ -6,9 +6,9 @@ import controller
 
 class Game():
     """Class to manage the actor and gameworld classes"""
-    def __init__(self):
+    def __init__(self, door_side = random.randint(0, 3) * 90):
         """Create the world"""
-        self.world = gameworld.Init_World() # initalize the world
+        self.world = gameworld.Init_World(door_side) # initalize the world
         self.controller = controller.Arrow_Keys_Controller()
         self.clock = pygame.time.Clock() # initialize the clock
 
@@ -38,8 +38,9 @@ class Game():
             pass
 
     def game_over(self):
-        pass
         # activate your sword to play again
+        pass
+
 
 if __name__ == "__main__":
     game = Game()

@@ -4,12 +4,13 @@ import actors
 
 class Init_World():
     """Initialize the world"""
-    def __init__(self, width=15, height = 15, cell_size=45):
+    def __init__(self, door_side, width=15, height = 15, cell_size=45):
         """Initialize the world.
         width: The width of the world in cells
         height: The height of the world in cells
         cell_size: The dimensions of the cell in pixels"""
         pygame.init() # initialize the pygame module
+        self.door_side = door_side
         screen_size = (height * cell_size, width * cell_size)
         self.screen = pygame.display.set_mode(screen_size)
         self.actors = []
@@ -58,31 +59,21 @@ class Init_World():
         except ValueError: # if the actor does not exist
             return False
 
-    def _get_door_location(self, door_position = random.randint(1, 4)):
+    def _get_door_location(self):
         """Determine the opening location, the places not to place wall
         tiles as a border
         door_position: The position of the door based on a number. 1:top,
         2:bottom, 3: left, 4:right
 
-        returns: Tuple of the position of the opening
-
-        The following doctest was added to test all four positions
-        >>> world = World()
-        >>> world._door_location(1)
-        (10, 0)
-        >>> world._door_location(2)
-        (10, 19)
-        >>> world._door_location(3)
-        (0, 10)
-        >>> world._door_location(4)
-        (19, 10)"""
+        returns: Tuple of the position of the opening"""
         pos = {
-            1:(int(self.width/2), 0), # center top door
-            2:(int(self.width/2), self.height-1), # center bottom door
-            3:(0, int(self.height/2)), # center left door
-            4:(int(self.width-1), int(self.height/2)), # center
+            0:(int(self.width/2), 0), # center top door
+            90:(0, int(self.height/2)), # center left door
+            180:(int(self.width/2), self.height-1), # center bottom
+            270:(int(self.width-1), int(self.height/2)), # center right door
         }
-        self.door_position = pos.get(door_position)
+        self.door_position = pos.get(self.door_side)
+        print(self.door_side)
 
     def _init_door(self):
         """Initialize the door and add to actors"""

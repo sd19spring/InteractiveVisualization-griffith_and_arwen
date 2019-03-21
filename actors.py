@@ -57,14 +57,14 @@ class Actor():
             new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
             new_image = transform.rotate(self.image_orig, 0)
             new_facing = 0
-        elif direction == 'down':
-            new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
-            new_image = transform.rotate(self.image_orig, 180)
-            new_facing = 180
         elif direction == 'left':
             new_coord = (self.cell_coordinates[0] - 1, self.cell_coordinates[1])
             new_image = transform.rotate(self.image_orig, 90)
             new_facing = 90
+        elif direction == 'down':
+            new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
+            new_image = transform.rotate(self.image_orig, 180)
+            new_facing = 180
         elif direction == 'right':
             new_coord = (self.cell_coordinates[0] + 1, self.cell_coordinates[1])
             new_image = transform.rotate(self.image_orig, 270)
