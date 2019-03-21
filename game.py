@@ -7,24 +7,30 @@ import controller
 class Game():
     """Class to manage the actor and gameworld classes"""
     def __init__(self):
+        """Create the world"""
         self.world = gameworld.Init_World() # initalize the world
         self.controller = controller.Arrow_Keys_Controller()
         self.clock = pygame.time.Clock() # initialize the clock
+
+    def check_events(self, event):
+        """Check the events"""
+        if event.type is pygame.QUIT: # if the program is closed
+            self.world.running = False
+        elif event.type == pygame.KEYDOWN: # if a key is pressed
+            self.controller.pressed(event.key)
+        elif event.type == pygame.KEYUP: # if a key is released
+            self.controller.released(event.key)
+
+    def game_over(self):
+        pass
+
 if __name__ == "__main__":
     game = Game()
-    # world = gameworld.Init_World() # initalize the world
-    # controller = controller.Arrow_Keys_Controller()
-    # clock = pygame.time.Clock() # initialize the clock
     while game.world.running:
         game.clock.tick(8)
         update = gameworld.Update(game.world)
         for event in pygame.event.get():
-            if event.type is pygame.QUIT: # if the program is closed
-                game.world.running = False
-            elif event.type == pygame.KEYDOWN: # if a key is pressed
-                game.controller.pressed(event.key)
-            elif event.type == pygame.KEYUP: # if a key is released
-                game.controller.released(event.key)
+            game.check_events(event) # check the events
         update._redraw()
         try: # finds the direction that is currently true
             dir = list(game.controller.direction.keys())[list(game.controller.direction.values()).index(True)]
