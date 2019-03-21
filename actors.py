@@ -52,7 +52,7 @@ class Actor():
     def move(self, direction):
         """Moves an actor.
 
-        direction: the direction to move the player"""
+        direction: the direction to move the actor"""
         if direction == 'up':
             new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
             new_image = transform.rotate(self.image_orig, 0)
@@ -71,6 +71,9 @@ class Actor():
             new_facing = 270
         if self.is_valid(new_coord): # check if the coord is valid
             self.cell_coordinates = new_coord
+            self.image = new_image
+            self.facing = new_facing
+        else:
             self.image = new_image
             self.facing = new_facing
 

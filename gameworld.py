@@ -23,7 +23,6 @@ class Init_World():
         self._init_border()
         self._init_hills()
         self._init_player()
-        self._init_hills()
         self._init_npcs()
 
     def _init_cells(self):
@@ -79,7 +78,7 @@ class Init_World():
             1:(int(self.width/2), 0), # center top door
             2:(int(self.width/2), self.height-1), # center bottom door
             3:(0, int(self.height/2)), # center left door
-            4:(self.width-1, int(self.height/2)), # center
+            4:(int(self.width-1), int(self.height/2)), # center
         }
         return pos.get(door_position)
 
@@ -110,7 +109,7 @@ class Init_World():
                     pass
 
     def _init_hills(self, hill_count = random.randint(2, 5)):
-        """Initialize the pieces in the middle of the arena"""
+        """Initialize a random number of hills in random places"""
         pos = {
             0: (2, 10),
             1: (2, 9),
@@ -186,7 +185,7 @@ class Update(Init_World):
         all_actors = self.actors
         for actor in all_actors: # itterate through each actor
             # Just update the npcs and actors position
-            if type(actor) == actors.Player or type(actor) == actors.Npc or type(actor) == actors.Hill:
+            if type(actor) == actors.Player or type(actor) == actors.Npc:
                 pos = self.actors.index(actor) # get the position of the coord in the list
                 if self.actors_position[pos] != actor.cell_coordinates: # if the position is not updated
                     self.actors_position[pos] = actor.cell_coordinates # update the position
