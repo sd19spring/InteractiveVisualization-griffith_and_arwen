@@ -24,6 +24,7 @@ class Init_World():
         self._init_hills()
         self._init_player()
         self._init_npcs()
+        self.running = True # set the program to run
 
     def _init_cells(self):
         """Creates all of the cells, getting positions for each cell"""

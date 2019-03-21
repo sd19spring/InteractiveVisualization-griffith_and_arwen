@@ -45,7 +45,7 @@ class Actor():
 
         coord: The coordinate to check if valid"""
         if self.world._is_deadly(coord) == True:
-            return Error # rewrite
+            self.world.running = False # close the world
         return (self.world._is_in_grid(coord) # checks if in the world
                 and not self.world._is_occupied(coord)) # checks if occupied
 
@@ -93,7 +93,6 @@ class Player(Actor):
         """Execute an action for the Player"""
         if act == 'sword':
             self.sword = Sword(self, self.world)
-
 
 class Sword(Player):
     """Sword object to attack"""
