@@ -51,3 +51,6 @@ if __name__ == "__main__":
         update._redraw()
         game.check_direction()
         game.check_actions()
+        if game.world.cleared: # if the world has been cleared
+            if game.world.player.cell_coordinates == game.world.door_position: # if the player is going through the door
+                game = Game()
