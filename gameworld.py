@@ -111,9 +111,20 @@ class Init_World():
 
     def _init_hills(self, hill_count = random.randint(2, 5)):
         """Initialize the pieces in the middle of the arena"""
-        self.hill = actors.Hill((2, 10), self, './images/hill.jpg')
-        self.actors.append(self.hill)
-        self.actors_position.append(self.hill.cell_coordinates)
+        pos = {
+            0: (2, 10),
+            1: (2, 9),
+            2: (10, 2),
+            3: (3, 9),
+            4: (10, 3),
+            5: (10, 4)
+        }
+        for hill in range(hill_count):
+            place = random.choice(pos)
+            self.hill = actors.Hill(place, self, './images/hill.jpg')
+            self.actors.append(self.hill)
+            self.actors_position.append(self.hill.cell_coordinates)
+            del place
 
     def _init_player(self):
         """Initialize the player in a random spot on the map
