@@ -4,13 +4,14 @@ import actors
 
 class Init_World():
     """Initialize the world"""
-    def __init__(self, door_side, width=15, height = 15, cell_size=45):
+    def __init__(self, door_side, opening_side, width=15, height = 15, cell_size=45):
         """Initialize the world.
         width: The width of the world in cells
         height: The height of the world in cells
         cell_size: The dimensions of the cell in pixels"""
         pygame.init() # initialize the pygame module
         self.door_side = door_side
+        self.opening_side = opening_side
         screen_size = (height * cell_size, width * cell_size)
         self.screen = pygame.display.set_mode(screen_size)
         self.actors = []
@@ -21,6 +22,7 @@ class Init_World():
         self.cell_size = cell_size
         self._init_cells() # creates the cells
         self._init_door()
+        self._init_opening()
         self._init_border()
         self._init_hills()
         self._init_player()
@@ -59,7 +61,7 @@ class Init_World():
         except ValueError: # if the actor does not exist
             return False
 
-    def _get_door_location(self):
+    def _get_door_location(self, door_side):
         """Determine the opening location, the places not to place wall
         tiles as a border"""
         pos = {
@@ -68,15 +70,22 @@ class Init_World():
             180:(int(self.width/2), self.height-1), # center bottom
             270:(int(self.width-1), int(self.height/2)), # center right door
         }
-        self.door_position = pos.get(self.door_side)
+        return pos.get(door_side)
 
     def _init_door(self):
         """Initialize the door and add to actors"""
-        self._get_door_location()
+        self.door_position = self._get_door_location(self.door_side)
         self.door = actors.Actor(self.door_position, self, './images/door.jpg') # create the door object
-        # self.actors[tuple(self.door.cell_coordinates)] = self.door # add the player to the actors list in World()
         self.actors.append(self.door)
         self.actors_position.append(self.door.cell_coordinates)
+
+    def _init_opening(self):
+        """Initialize the opening and add to actors"""
+        if self.opening_side != None:
+            self.opening_position = self._get_door_location(self.opening_side)
+            self.opening = actors.Actor(self.opening_position, self, './images/opening.jpg')
+            self.actors.append(self.opening)
+            self.actors_position.append(self.opening.cell_coordinates)
 
     def open_door(self):
         """Replace the door with an open door"""

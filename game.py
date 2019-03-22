@@ -6,10 +6,10 @@ import controller
 
 class Game():
     """Class to manage the actor and gameworld classes"""
-    def __init__(self, door_side = random.randint(0, 3) * 90):
+    def __init__(self, door_side = random.randint(0, 3) * 90, opening = None):
         """Create the world"""
         self.door_side = door_side
-        self.world = gameworld.Init_World(door_side) # initalize the world
+        self.world = gameworld.Init_World(door_side, opening) # initalize the world
         self.controller = controller.Arrow_Keys_Controller()
         self.clock = pygame.time.Clock() # initialize the clock
 
@@ -38,8 +38,8 @@ class Game():
         except ValueError: # if True is not in the list
             pass
 
-    def get_complementary_door(self):
-        """Get the door for the next room"""
+    def get_complementary_opening(self):
+        """Get the opening for the next room"""
         if self.door_side == 0:
             return 180
         elif self.door_side == 90:
@@ -49,6 +49,14 @@ class Game():
         elif self.door_side == 270:
             return 90
 
+    def get_next_door(self):
+        """Get the door for the next room"""
+        open = self.get_complementary_opening()
+        # find a door position that is not the opening
+        door_side = open
+        while door_side == open:
+            door_side = random.randint(0, 3) * 90
+        return door_side
     def game_over(self):
         # activate your sword to play again
         pass
@@ -66,4 +74,4 @@ if __name__ == "__main__":
         game.check_actions()
         if game.world.cleared: # if the world has been cleared
             if game.world.player.cell_coordinates == game.world.door_position: # if the player is going through the door
-                game = Game(game.get_complementary_door())
+                game = Game(game.get_next_door(), game.get_complementary_opening())
