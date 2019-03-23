@@ -61,11 +61,10 @@ class Game():
         # activate your sword to play again
         pass
 
-
 if __name__ == "__main__":
     game = Game()
     while game.world.running:
-        game.clock.tick(8)
+        game.clock.tick(10)
         update = gameworld.Update(game.world)
         for event in pygame.event.get():
             game.check_events(event) # check the events
