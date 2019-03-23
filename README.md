@@ -8,14 +8,7 @@ TO DO
 ## Playing the Game
 TO DO
 
-## Minimum Viable Product Goals
-* One room game
-* Randomly generated obscalcles
-* Randomly generated NPCs (that are not using AI)
-* Up, down, left, right movement
-
 ## Stretch Goals
-* Multiple rooms with cohesion between them
 * AI NPCs
 * Animated Sprites
 * Joystick controller functionality
