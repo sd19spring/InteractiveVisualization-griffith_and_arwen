@@ -53,26 +53,35 @@ class Actor():
         """Moves an actor.
 
         direction: the direction to move the actor"""
+        new_coord = self.cell_coordinates
         if direction == 'up':
-            new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
-            new_image = transform.rotate(self.image_orig, 0)
-            new_facing = 0
+            if self.facing == 0: # if already facing up
+                new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
+            else: # if not facing up, rotate up
+                new_image = transform.rotate(self.image_orig, 0)
+                new_facing = 0
         elif direction == 'left':
-            new_coord = (self.cell_coordinates[0] - 1, self.cell_coordinates[1])
-            new_image = transform.rotate(self.image_orig, 90)
-            new_facing = 90
+            if self.facing == 90: # if already facing left
+                new_coord = (self.cell_coordinates[0] - 1, self.cell_coordinates[1])
+            else: # if not facing left, rotate left
+                new_image = transform.rotate(self.image_orig, 90)
+                new_facing = 90
         elif direction == 'down':
-            new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
-            new_image = transform.rotate(self.image_orig, 180)
-            new_facing = 180
+            if self.facing == 180: # if already facing down
+                new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
+            else: # if not facing down, rotate down
+                new_image = transform.rotate(self.image_orig, 180)
+                new_facing = 180
         elif direction == 'right':
-            new_coord = (self.cell_coordinates[0] + 1, self.cell_coordinates[1])
-            new_image = transform.rotate(self.image_orig, 270)
-            new_facing = 270
-        if self.is_valid(new_coord): # check if the coord is valid
-            self.cell_coordinates = new_coord
-            self.image = new_image
-            self.facing = new_facing
+            if self.facing == 270: # if already facing right
+                new_coord = (self.cell_coordinates[0] + 1, self.cell_coordinates[1])
+            else: # if not facing right, rotate right
+                new_image = transform.rotate(self.image_orig, 270)
+                new_facing = 270
+        if new_coord != self.cell_coordinates and self.is_valid(new_coord): # if the coord changed and is valid
+                self.cell_coordinates = new_coord
+                # self.image = new_image
+                # self.facing = new_facing
         else:
             self.image = new_image
             self.facing = new_facing
