@@ -4,7 +4,7 @@ import actors
 
 class Init_World():
     """Initialize the world"""
-    def __init__(self, door_side, opening_side, width=15, height = 15, cell_size=45):
+    def __init__(self, door_side, opening_side, width = 15, height = 15, cell_size=45):
         """Initialize the world.
         width: The width of the world in cells
         height: The height of the world in cells
@@ -138,9 +138,9 @@ class Init_World():
         """Determines the spawn locations of NPCs in the room"""
         pos = {
             1: (2, 2),
-            2: (2, 12),
-            3: (12, 2),
-            4: (12, 12),
+            2: (2, self.height-3),
+            3: (self.width-3, 2),
+            4: (self.width-3, self.height-3),
         }
         return pos.get(npc_position)
 

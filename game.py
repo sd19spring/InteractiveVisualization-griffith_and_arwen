@@ -57,6 +57,7 @@ class Game():
         while door_side == open:
             door_side = random.randint(0, 3) * 90
         return door_side
+        
     def game_over(self):
         # activate your sword to play again
         pass
