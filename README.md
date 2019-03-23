@@ -24,7 +24,7 @@ TO DO
 * Ability to block
 
 ## To Do
-* Make npc spawns based on the size of the map
+* Add more hill spawn locations
 * Put the lists into one dictionary (for coordinates)
 
 ## Bugs

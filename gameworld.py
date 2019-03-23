@@ -122,10 +122,11 @@ class Init_World():
         }
         for hill in range(hill_count):
             place = random.choice(pos)
+            while place in self.actors_position: # while the space is occupied
+                place = random.choice(pos) # generate more choices
             self.hill = actors.Hill(place, self, './images/hill.jpg')
             self.actors.append(self.hill)
             self.actors_position.append(self.hill.cell_coordinates)
-            del place
 
     def _init_player(self):
         """Initialize the player at the center of the map"""
