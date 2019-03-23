@@ -110,7 +110,7 @@ class Init_World():
                     self.actors_position.append(self.border.cell_coordinates)
                 else: pass
 
-    def _init_hills(self, hill_count = random.randint(2, 5)):
+    def _init_hills(self, hill_count = random.randint(3, 6)):
         """Initialize a random number of hills in random places"""
         pos = {
             0: (2, self.height-5),
