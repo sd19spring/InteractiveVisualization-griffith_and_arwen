@@ -80,11 +80,16 @@ class Actor():
                 new_facing = 270
         if new_coord != self.cell_coordinates and self.is_valid(new_coord): # if the coord changed and is valid
                 self.cell_coordinates = new_coord
-                # self.image = new_image
-                # self.facing = new_facing
+                # update = gameworld.Update(self.world)
+                # update._redraw()
+                self.draw()
+                time.sleep(.2)
         else:
-            self.image = new_image
-            self.facing = new_facing
+            try:
+                self.image = new_image
+                self.facing = new_facing
+            except UnboundLocalError: # if the item has not moved or rotated
+                pass # ie no new image
 
 class Player(Actor):
     """Creates the Player to place on the map"""
