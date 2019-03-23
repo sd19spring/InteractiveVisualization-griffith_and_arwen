@@ -113,12 +113,12 @@ class Init_World():
     def _init_hills(self, hill_count = random.randint(2, 5)):
         """Initialize a random number of hills in random places"""
         pos = {
-            0: (2, 10),
-            1: (2, 9),
-            2: (10, 2),
-            3: (3, 9),
-            4: (10, 3),
-            5: (10, 4)
+            0: (2, self.height-5),
+            1: (2, self.height-6),
+            2: (self.width-5, 2),
+            3: (3, self.height-6),
+            4: (self.width-5, 3),
+            5: (self.width-5, 4)
         }
         for hill in range(hill_count):
             place = random.choice(pos)
