@@ -4,7 +4,7 @@ import actors
 
 class Init_World():
     """Initialize the world"""
-    def __init__(self, door_side, opening_side, width = 15, height = 15, cell_size=45):
+    def __init__(self, door_side, opening_side, level, width = 15, height = 15, cell_size=45):
         """Initialize the world.
         width: The width of the world in cells
         height: The height of the world in cells
@@ -12,6 +12,7 @@ class Init_World():
         pygame.init() # initialize the pygame module
         self.door_side = door_side
         self.opening_side = opening_side
+        self.level = level
         screen_size = (height * cell_size, width * cell_size)
         self.screen = pygame.display.set_mode(screen_size)
         self.actors = []
@@ -147,9 +148,9 @@ class Init_World():
 
     def _init_npcs(self):
         """Initialize the npcs on the map"""
-        self.npc = actors.Npc(self._npc_locations(), self, './images/npc1.jpg')
-        self.actors.append(self.npc)
-        self.actors_position.append(self.npc.cell_coordinates)
+        npc = actors.Npc(self._npc_locations(), self, './images/npc1.jpg')
+        self.actors.append(npc)
+        self.actors_position.append(npc.cell_coordinates)
 
     def _is_in_grid(self, cell_coord):
         """Tells whether cell_coord is valid and in range of the actual grid dimensions."""

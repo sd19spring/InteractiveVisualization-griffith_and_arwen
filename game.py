@@ -6,10 +6,11 @@ import controller
 
 class Game():
     """Class to manage the actor and gameworld classes"""
-    def __init__(self, door_side = random.randint(0, 3) * 90, opening = None):
+    def __init__(self, door_side = random.randint(0, 3) * 90, opening = None, level = 1):
         """Create the world"""
         self.door_side = door_side
-        self.world = gameworld.Init_World(door_side, opening) # initalize the world
+        self.level = level
+        self.world = gameworld.Init_World(door_side, opening, level) # initalize the world
         self.controller = controller.Arrow_Keys_Controller()
         self.clock = pygame.time.Clock() # initialize the clock
 
@@ -75,4 +76,4 @@ if __name__ == "__main__":
         game.check_actions()
         if game.world.cleared: # if the world has been cleared
             if game.world.player.cell_coordinates == game.world.door_position: # if the player is going through the door
-                game = Game(game.get_next_door(), game.get_complementary_opening())
+                game = Game(game.get_next_door(), game.get_complementary_opening(), game.level + 1)

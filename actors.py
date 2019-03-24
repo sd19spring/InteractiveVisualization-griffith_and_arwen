@@ -2,6 +2,18 @@ import pygame
 import gameworld
 from pygame import transform
 import time
+import random
+
+def angle_to_dir(angle):
+    """Converts an angle to left, right, up, or down"""
+    if angle == 0:
+        return 'up'
+    elif angle == 90:
+        return 'left'
+    elif angle == 180:
+        return 'down'
+    elif angle == 270:
+        return  'right'
 
 class Cell():
     def __init__(self, draw_screen, coordinates, dimensions):
@@ -29,6 +41,7 @@ class Actor():
         self.image = pygame.image.load(image_loc)
         self.image_orig = self.image # an original image to base off of that does not rotate
         self.image_rect = self.image.get_rect()
+
 
     def draw(self):
         cells = self.world.cells
@@ -153,7 +166,8 @@ class Npc(Actor):
         """Initialize the NPC.
         initial_coordinates: the starting coordinates for the NPC
         world: the map
-        image_location: file path of the image for the NPC"""
+        image_location: file path of the image for the NPC
+        health = number of hits until dead"""
         super(Npc, self).__init__(
             initial_coordinates, world, image_location, removable=True, deadly=True, is_obstacle=False) # uses the __init__ method from Player()
         self.health = health
@@ -161,8 +175,21 @@ class Npc(Actor):
 class Grunt(Npc):
     """Basic NPC that walks back and forth until it hits an obstacle,
     then it turns around and walks back to its starting position."""
-    pass
+    def __init__(self, initial_coordinates, world, image_location, health = 1, mov_dir = random.randint(0, 3) * 90):
+        """Initialize the Grunt.
+        initial_coordinates: starting position for the Grunt
+        world: the map
+        image_location: file path of the image for the NPC
+        health = number of hits until dead
+        mov_dir = the direction the npc moves in"""
+        super(Grunt, self).__init__(
+        initial_coordinates, world, image_location, health)
+        self.move_dir = angle_to_dir(move_dir)
+        print(self.move_dir)
 
+    def move(self):
+        """Move the Grunt in the correct direction and at the correct space"""
+        pass
 class Hill(Actor):
     """Creates a hill to place in the world"""
     def __init__(self, initial_coordinates, world, image_location):
