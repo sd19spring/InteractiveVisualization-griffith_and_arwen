@@ -136,7 +136,7 @@ class Init_World():
         self.actors_position.append(self.player.cell_coordinates)
         # need to randomize location, but consider not spawning in impassible objects
 
-    def _npc_locations(self, npc_position = random.randint(1, 4)): #will need to change to reflect number of squares on map
+    def _npc_locations(self, npc_position): #will need to change to reflect number of squares on map
         """Determines the spawn locations of NPCs in the room"""
         pos = {
             1: (2, 2),
@@ -144,13 +144,25 @@ class Init_World():
             3: (self.width-3, 2),
             4: (self.width-3, self.height-3),
         }
-        return pos.get(npc_position)
+        position = pos.get(npc_position)
+        while self._is_occupied(position) == True:
+            position = pos.get(npc_position)
+        return position
 
     def _init_npcs(self):
         """Initialize the npcs on the map"""
-        npc = actors.Npc(self._npc_locations(), self, './images/npc1.jpg')
-        self.actors.append(npc)
-        self.actors_position.append(npc.cell_coordinates)
+        for i in range(self.level):
+            if i <= 2: # spawn up to three grunts
+                print('spawning grunt')
+                npc = actors.Grunt(self._npc_locations(npc_position = random.randint(1, 4)), self, 'images/npc2.jpg')
+            elif 3 <= i >= 4: # spawn up to two ghosts
+                print('spawning ghost')
+            elif i >= 5: # if on the fifth level
+                print('spawning boss')
+                # should exit the loop now
+            if not self._is_occupied(npc.cell_coordinates): # if the spot is not already occupied (probably by an npc)
+                self.actors.append(npc)
+                self.actors_position.append(npc.cell_coordinates)
 
     def _is_in_grid(self, cell_coord):
         """Tells whether cell_coord is valid and in range of the actual grid dimensions."""
@@ -203,6 +215,7 @@ class Update(Init_World):
         if not npc:
             self.world.cleared = True
             self.world.open_door()
+
     def _redraw(self):
         """Updates the world view"""
         self._draw_background()

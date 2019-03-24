@@ -3,6 +3,7 @@ import gameworld
 from pygame import transform
 import time
 import random
+from game import Game
 
 def angle_to_dir(angle):
     """Converts an angle to left, right, up, or down"""
@@ -169,13 +170,13 @@ class Npc(Actor):
         image_location: file path of the image for the NPC
         health = number of hits until dead"""
         super(Npc, self).__init__(
-            initial_coordinates, world, image_location, removable=True, deadly=True, is_obstacle=False) # uses the __init__ method from Player()
+            initial_coordinates, world, image_location, removable=True, deadly=True, is_obstacle=True) # uses the __init__ method from Player()
         self.health = health
 
 class Grunt(Npc):
     """Basic NPC that walks back and forth until it hits an obstacle,
     then it turns around and walks back to its starting position."""
-    def __init__(self, initial_coordinates, world, image_location, health = 1, mov_dir = random.randint(0, 3) * 90):
+    def __init__(self, initial_coordinates, world, image_location, health = 1, move_dir = random.randint(0, 3) * 90):
         """Initialize the Grunt.
         initial_coordinates: starting position for the Grunt
         world: the map
