@@ -19,6 +19,7 @@ TO DO
 ## To Do
 * Add more hill spawn locations
 * Put the lists into one dictionary (for coordinates)
+* Make different leveled rooms spawn different kinds and number of npcs
 
 ## Bugs
 
