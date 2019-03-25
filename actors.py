@@ -152,7 +152,6 @@ class Sword(Actor):
         self.facing = player.facing
         self._get_coordinates()
         self._swing()
-        self.deadly = True
 
     def _get_coordinates(self):
         """Find the space immediately in front of the player to swing in"""
@@ -175,6 +174,9 @@ class Sword(Actor):
         self.world.actors.append(self)
         gameworld.Update(self.world)._redraw() # draw the sword
         time.sleep(.5) # how long to swing
+        # GET THE CURRENT TICK OF THE WORLD
+        # GET A VALUE OF THE TICK WHERE IT SHOULD GO AWAY
+        # HAVE THE UPDATE CLASS DEAL WITH REMOVING THE SWORD
         self.world.actors_position.remove(self.cell_coordinates) # remove the sword
         self.world.actors.remove(self)
 

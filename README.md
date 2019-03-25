@@ -9,6 +9,9 @@ TO DO
 TO DO
 
 ## Stretch Goals
+* Add more hill spawn locations
+* Put the lists into one dictionary (for coordinates)
+* Make different leveled rooms spawn different kinds and number of npcs
 * AI NPCs
 * Animated Sprites
 * Joystick controller functionality
@@ -17,13 +20,10 @@ TO DO
 * Ability to block
 
 ## To Do
-* Add more hill spawn locations
-* Put the lists into one dictionary (for coordinates)
-* Make different leveled rooms spawn different kinds and number of npcs
+* Remove delay when swinging (is there a way to automatically remove the sword once a certain tick has between hit?)
 
 ## Bugs
 * getting rid of the wrong npc
-* npcs jump over sword
 
 ## Ideas
 * Have blocks that can be broken with an axe or other action. They can also
