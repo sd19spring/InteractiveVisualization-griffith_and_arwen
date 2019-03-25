@@ -26,7 +26,6 @@ TO DO
 * getting rid of the wrong npc
 
 ## Ideas
-* Have blocks that can be broken with an axe or other action. They can also
-be broken with a sword (have hp) but
-take lots of damage with an axe
+* Have blocks that can be broken with an axe or other action. They can also be broken with a sword (have hp)
+but take lots of damage with an axe
 * Count the number of rooms you have been through
