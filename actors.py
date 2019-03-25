@@ -71,8 +71,6 @@ class Actor():
         """Checks if the space the player wants to move to can be moved to
 
         coord: The coordinate to check if valid"""
-        # if self.world._is_deadly(coord) == True:
-        #     self.world.running = False # close the world
         return (self.world._is_in_grid(coord) # checks if in the world
                 and not self.world._is_occupied(coord)) # checks if occupied
 
@@ -144,16 +142,17 @@ class Player(Actor):
         if act == 'sword':
             self.sword = Sword(self, self.world)
 
-class Sword(Player):
+class Sword(Actor):
     """Sword object to attack"""
 
     def __init__(self, player, world, image_location = './images/sword.jpg'):
         """Initialize the sword object"""
         super(Sword, self).__init__(
-            player.cell_coordinates, world, image_location) # uses the __init__ method from Actor()
+            player.cell_coordinates, world, image_location, removable=True, is_obstacle=False) # uses the __init__ method from Actor()
         self.facing = player.facing
         self._get_coordinates()
         self._swing()
+        self.deadly = True
 
     def _get_coordinates(self):
         """Find the space immediately in front of the player to swing in"""
@@ -220,6 +219,7 @@ class Grunt(Npc):
         if self.world._is_occupied(self.next_space(self.move_dir)) : # if the npc will hit the room
             self.move_dir = get_rev_dir(self.move_dir)
         # when turning around, stab?
+
 class Hill(Actor):
     """Creates a hill to place in the world"""
     def __init__(self, initial_coordinates, world, image_location):

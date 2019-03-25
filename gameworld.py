@@ -55,6 +55,8 @@ class Init_World():
 
     def _is_occupied(self, cell_coord):
         """Checks if a space is occupied by a tile."""
+        if cell_coord == self.opening_position:
+            return True
         try:
             pos = self.actors_position.index(cell_coord) # get the position of the coord in the list
             actor = self.actors[pos] # get the actor that is at that coord
@@ -81,12 +83,11 @@ class Init_World():
         self.actors_position.append(self.door.cell_coordinates)
 
     def _init_opening(self):
-        """Initialize the opening and add to actors"""
+        """Initialize the opening"""
         if self.opening_side != None:
             self.opening_position = self._get_door_location(self.opening_side)
-            self.opening = actors.Actor(self.opening_position, self, './images/opening.jpg')
-            self.actors.append(self.opening)
-            self.actors_position.append(self.opening.cell_coordinates)
+        else:
+            self.opening_position = None
 
     def open_door(self):
         """Replace the door with an open door"""
@@ -100,16 +101,12 @@ class Init_World():
             for y in range(0, self.height, self.height-1): # go through the top and bottom
                 if not self._is_occupied((x, y)):
                     self.border = actors.Actor((x, y), self, './images/wall.jpg') # go horizontally
-                    # self.actors[tuple(self.border.cell_coordinates)] = self.border
                     self.actors.append(self.border)
                     self.actors_position.append(self.border.cell_coordinates)
-                else: pass
                 if not self._is_occupied((y, x)):
                     self.border = actors.Actor((y, x), self, './images/wall.jpg') # go vertically
-                    # self.actors[tuple(self.border.cell_coordinates)] = self.border
                     self.actors.append(self.border)
                     self.actors_position.append(self.border.cell_coordinates)
-                else: pass
 
     def _init_hills(self, hill_count = random.randint(3, 6)):
         """Initialize a random number of hills in random places"""
