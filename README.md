@@ -18,9 +18,11 @@ TO DO
 * Tunnels between rooms
 * Create "game over" screen with restart
 * Ability to block
+* Add clock
 
 ## To Do
 * Remove delay when swinging (is there a way to automatically remove the sword once a certain tick has between hit?)
+* Make menu nicer
 
 ## Bugs
 * getting rid of the wrong npc

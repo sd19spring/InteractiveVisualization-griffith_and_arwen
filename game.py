@@ -96,6 +96,7 @@ def run_game(game):
 if __name__ == "__main__":
     start = Start()
     start_game = False
+    
     running = True
     while running == True:
         start._redraw()
