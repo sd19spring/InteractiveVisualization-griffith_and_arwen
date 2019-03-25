@@ -22,6 +22,8 @@ TO DO
 * Make different leveled rooms spawn different kinds and number of npcs
 
 ## Bugs
+* getting rid of the wrong npc
+* npcs jump over sword
 
 ## Ideas
 * Have blocks that can be broken with an axe or other action. They can also

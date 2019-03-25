@@ -132,8 +132,6 @@ class Init_World():
     def _init_player(self):
         """Initialize the player at the center of the map"""
         self.player = actors.Player((int(self.height/2), int(self.width/2)), self, './images/player.jpg') # create the player
-        self.actors.append(self.player)
-        self.actors_position.append(self.player.cell_coordinates)
         # need to randomize location, but consider not spawning in impassible objects
 
     def _npc_locations(self, npc_position): #will need to change to reflect number of squares on map
@@ -152,9 +150,12 @@ class Init_World():
     def _init_npcs(self):
         """Initialize the npcs on the map"""
         for i in range(self.level):
-            if i <= 2: # spawn up to three grunts
+            if i == 0 or i ==2: # spawn up to two grunts
                 print('spawning grunt')
                 npc = actors.Grunt(self._npc_locations(npc_position = random.randint(1, 4)), self, 'images/npc2.jpg')
+            elif i == 1:
+                # spawn lava
+                print('spawning lava')
             elif 3 <= i >= 4: # spawn up to two ghosts
                 print('spawning ghost')
             elif i >= 5: # if on the fifth level
@@ -175,7 +176,7 @@ class Init_World():
         try:
             pos = self.actors_position.index(cell_coord) # get the position of the coord in the list
             actor = self.actors[pos] # get the actor that is at that coord
-            return actor.deadly # if obstacle, true, else False
+            return actor.deadly # if obstacle is deadly
         except ValueError: # if the actor does not exist
             return False
 
@@ -186,6 +187,7 @@ class Update(Init_World):
         self.world = world
         self.actors = world.actors
         self.actors_position = world.actors_position
+        self.player = world.player
         self.screen = world.screen
 
     def _draw_background(self):
@@ -193,20 +195,31 @@ class Update(Init_World):
         COLOR = (252, 216, 169) # the beige from the legend of zelda games
         self.screen.fill(COLOR)
 
+    def _npc_actions(self):
+        """Execute the action of each npc"""
+        for actor in self.actors: # itterate through each actor
+            if type(actor) == actors.Grunt:
+                actor.action()
+
+    def _check_movement(self, actor):
+        """Check if an item has moved, if it has, update the position"""
+        pos = self.actors.index(actor) # get the position of the coord in the list
+        if self.actors_position[pos] != actor.cell_coordinates: # if the position is not updated
+            self.actors_position[pos] = actor.cell_coordinates # update the position
+
     def _draw_actors(self):
         """Draws the actors"""
         for actor in self.actors: # itterate through each actor
-            # Just update the npcs and actors position
-            if type(actor) == actors.Player or type(actor) == actors.Npc or type(actor) == actors.Grunt:
-                pos = self.actors.index(actor) # get the position of the coord in the list
-                if self.actors_position[pos] != actor.cell_coordinates: # if the position is not updated
-                    self.actors_position[pos] = actor.cell_coordinates # update the position
+            if type(actor) == actors.Npc or type(actor) == actors.Grunt:
+                self._check_movement(actor) # check if the object has moved, if not do not update
             actor.draw() # draw each actor
+        actor = self.player
+        actor.draw()
 
     def _check_clear(self):
         """Checks if the world is clear of npcs"""
         if self.world.cleared == True: # if have already cleared the world
-            return
+            return True
         # check if there are npcs in the world
         npc = False
         for actor in self.actors:
@@ -219,6 +232,7 @@ class Update(Init_World):
     def _redraw(self):
         """Updates the world view"""
         self._draw_background()
+        self._npc_actions()
         self._draw_actors()
         self._check_clear()
         pygame.display.update()

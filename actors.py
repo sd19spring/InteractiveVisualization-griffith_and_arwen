@@ -6,7 +6,9 @@ import random
 from game import Game
 
 def angle_to_dir(angle):
-    """Converts an angle to left, right, up, or down"""
+    """Converts an angle to left, right, up, or down
+
+    opposite: get the opposite of the given angle"""
     if angle == 0:
         return 'up'
     elif angle == 90:
@@ -15,6 +17,17 @@ def angle_to_dir(angle):
         return 'down'
     elif angle == 270:
         return  'right'
+
+def get_rev_dir(direction):
+    """Get the opposite direction"""
+    if direction == 'up':
+        return 'down'
+    elif direction == 'left':
+        return 'right'
+    elif direction == 'down':
+        return 'up'
+    elif direction == 'right':
+        return 'left'
 
 class Cell():
     def __init__(self, draw_screen, coordinates, dimensions):
@@ -58,11 +71,23 @@ class Actor():
         """Checks if the space the player wants to move to can be moved to
 
         coord: The coordinate to check if valid"""
-        if self.world._is_deadly(coord) == True:
-            self.world.running = False # close the world
+        # if self.world._is_deadly(coord) == True:
+        #     self.world.running = False # close the world
         return (self.world._is_in_grid(coord) # checks if in the world
                 and not self.world._is_occupied(coord)) # checks if occupied
 
+    def next_space(self, direction, distance = 1):
+        """Find the next space
+        direction: direction to go
+        distance: how many spaces to go"""
+        if direction == 'up':
+            return (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
+        elif direction == 'left':
+            return (self.cell_coordinates[0] - 1, self.cell_coordinates[1])
+        elif direction == 'down':
+            return (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
+        elif direction == 'right':
+            return (self.cell_coordinates[0] + 1, self.cell_coordinates[1])
     def move(self, direction):
         """Moves an actor.
 
@@ -70,25 +95,25 @@ class Actor():
         new_coord = self.cell_coordinates
         if direction == 'up':
             if self.facing == 0: # if already facing up
-                new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] - 1)
+                new_coord = self.next_space('up')
             else: # if not facing up, rotate up
                 new_image = transform.rotate(self.image_orig, 0)
                 new_facing = 0
         elif direction == 'left':
             if self.facing == 90: # if already facing left
-                new_coord = (self.cell_coordinates[0] - 1, self.cell_coordinates[1])
+                new_coord = self.next_space('left')
             else: # if not facing left, rotate left
                 new_image = transform.rotate(self.image_orig, 90)
                 new_facing = 90
         elif direction == 'down':
             if self.facing == 180: # if already facing down
-                new_coord = (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
+                new_coord = self.next_space('down')
             else: # if not facing down, rotate down
                 new_image = transform.rotate(self.image_orig, 180)
                 new_facing = 180
         elif direction == 'right':
             if self.facing == 270: # if already facing right
-                new_coord = (self.cell_coordinates[0] + 1, self.cell_coordinates[1])
+                new_coord = self.next_space('right')
             else: # if not facing right, rotate right
                 new_image = transform.rotate(self.image_orig, 270)
                 new_facing = 270
@@ -100,6 +125,7 @@ class Actor():
                 self.facing = new_facing
             except UnboundLocalError: # if the item has not moved or rotated
                 pass # ie no new image
+                # return None # ie no new image
 
 class Player(Actor):
     """Creates the Player to place on the map"""
@@ -109,7 +135,7 @@ class Player(Actor):
         world: the map
         image_location: file path of the image for the player"""
         super(Player, self).__init__(
-            initial_coordinates, world, image_location, removable=False) # uses the __init__ method from Actor()
+            initial_coordinates, world, image_location, removable=False, is_obstacle=False) # uses the __init__ method from Actor()
         self.cells = world.cells
         self.image_orig = self.image # an original image to base off of that does not rotate
 
@@ -176,7 +202,7 @@ class Npc(Actor):
 class Grunt(Npc):
     """Basic NPC that walks back and forth until it hits an obstacle,
     then it turns around and walks back to its starting position."""
-    def __init__(self, initial_coordinates, world, image_location, health = 1, move_dir = random.randint(0, 3) * 90):
+    def __init__(self, initial_coordinates, world, image_location, health = 1, move_angle = random.randint(0, 3) * 90):
         """Initialize the Grunt.
         initial_coordinates: starting position for the Grunt
         world: the map
@@ -185,12 +211,15 @@ class Grunt(Npc):
         mov_dir = the direction the npc moves in"""
         super(Grunt, self).__init__(
         initial_coordinates, world, image_location, health)
-        self.move_dir = angle_to_dir(move_dir)
-        print(self.move_dir)
+        self.move_dir = angle_to_dir(move_angle)
 
-    def move(self):
+    def action(self):
         """Move the Grunt in the correct direction and at the correct space"""
-        pass
+        old_coord = self.cell_coordinates
+        self.move(self.move_dir)
+        if self.world._is_occupied(self.next_space(self.move_dir)) : # if the npc will hit the room
+            self.move_dir = get_rev_dir(self.move_dir)
+        # when turning around, stab?
 class Hill(Actor):
     """Creates a hill to place in the world"""
     def __init__(self, initial_coordinates, world, image_location):

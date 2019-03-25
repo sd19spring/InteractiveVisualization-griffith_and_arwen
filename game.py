@@ -75,6 +75,8 @@ def run_game(game):
         if game.world.cleared: # if the world has been cleared
             if game.world.player.cell_coordinates == game.world.door_position: # if the player is going through the door
                 game = Game(game.get_next_door(), game.get_complementary_opening(), game.level + 1)
+        if game.world._is_deadly(game.world.player.cell_coordinates) == True:
+            game.world.running = False # close the world
         if game.world.running == False:
             print(game.level)
 
