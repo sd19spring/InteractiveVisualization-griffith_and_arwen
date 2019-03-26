@@ -86,6 +86,7 @@ class Actor():
             return (self.cell_coordinates[0], self.cell_coordinates[1] + 1)
         elif direction == 'right':
             return (self.cell_coordinates[0] + 1, self.cell_coordinates[1])
+
     def move(self, direction):
         """Moves an actor.
 
@@ -232,18 +233,18 @@ class Hill(Actor):
         super(Hill, self).__init__(
             initial_coordinates, world, image_location, removable=False)
 
-class Tile(Actor):
-    """Creates a tile on to place in the world"""
-    def __init__(self, cell_coordinates, world, image_location,
-                 movement_cost=0, is_unpassable=True):
-        """Initializes the tile.
-
-        cell_coordinates: coordinates of the cell
-        world: the world object
-        image_location: file path of the image for the cell
-        movement_cost: cost to move through the cell
-        is_unpassible: if the cell can be moved through"""
-        super(ObstacleTile, self).__init__(
-            cell_coordinates, world, image_location, removable=True,
-            is_obstacle=is_unpassable)
-        self.movement_cost = movement_cost
+# class Tile(Actor):
+#     """Creates a tile on to place in the world"""
+#     def __init__(self, cell_coordinates, world, image_location,
+#                  movement_cost=0, is_unpassable=True):
+#         """Initializes the tile.
+#
+#         cell_coordinates: coordinates of the cell
+#         world: the world object
+#         image_location: file path of the image for the cell
+#         movement_cost: cost to move through the cell
+#         is_unpassible: if the cell can be moved through"""
+#         super(ObstacleTile, self).__init__(
+#             cell_coordinates, world, image_location, removable=True,
+#             is_obstacle=is_unpassable)
+#         self.movement_cost = movement_cost
