@@ -1,7 +1,6 @@
 import pygame
 import random
 import actors
-
 class Init_World():
     """Initialize the world"""
     def __init__(self, door_side, opening_side, level, width = 15, height = 15, cell_size=45):
@@ -16,7 +15,7 @@ class Init_World():
         screen_size = (height * cell_size, width * cell_size)
         self.screen = pygame.display.set_mode(screen_size)
         self.actors = []
-        self.actors_position = []
+        # self.actors_position = []
         # set the dimensions of the world
         self.width = width
         self.height = height
@@ -58,9 +57,13 @@ class Init_World():
         if cell_coord == self.opening_position:
             return True
         try:
-            pos = self.actors_position.index(cell_coord) # get the position of the coord in the list
-            actor = self.actors[pos] # get the actor that is at that coord
-            return actor.is_obstacle # if obstacle, true, else False
+            # fix to new method
+            for actor in self.actors:
+                if actor[1] == cell_coord:
+                    return actor[0].is_obstacle
+            # pos = self.actors_position.index(cell_coord) # get the position of the coord in the list
+            # actor = self.actors[pos] # get the actor that is at that coord
+            # return actor.is_obstacle # if obstacle, true, else False
         except ValueError: # if the actor does not exist
             return False
 
@@ -79,8 +82,8 @@ class Init_World():
         """Initialize the door and add to actors"""
         self.door_position = self._get_door_location(self.door_side)
         self.door = actors.Actor(self.door_position, self, './images/door.jpg') # create the door object
-        self.actors.append(self.door)
-        self.actors_position.append(self.door.cell_coordinates)
+        self.actors.append((self.door, self.door.cell_coordinates))
+        # self.actors_position.append(self.door.cell_coordinates)
 
     def _init_opening(self):
         """Initialize the opening"""
@@ -91,9 +94,10 @@ class Init_World():
 
     def open_door(self):
         """Replace the door with an open door"""
-        # door is the first item added
-        del self.actors_position[0]
-        del self.actors[0]
+        del self.actors[0]     # door is the first item added
+        self.open_door = actors.Actor(self.door_position, self, './images/sludge.jpg')
+        self.actors.append((self.open_door, self.open_door.cell_coordinates))
+        self.space_before_opening = self.door_position
 
     def _init_border(self):
         """Initialize the border and add to actors. Assumes the world is square"""
@@ -101,12 +105,12 @@ class Init_World():
             for y in range(0, self.height, self.height-1): # go through the top and bottom
                 if not self._is_occupied((x, y)):
                     self.border = actors.Actor((x, y), self, './images/wall.jpg') # go horizontally
-                    self.actors.append(self.border)
-                    self.actors_position.append(self.border.cell_coordinates)
+                    self.actors.append((self.border, self.border.cell_coordinates))
+                    # self.actors_position.append(self.border.cell_coordinates)
                 if not self._is_occupied((y, x)):
                     self.border = actors.Actor((y, x), self, './images/wall.jpg') # go vertically
-                    self.actors.append(self.border)
-                    self.actors_position.append(self.border.cell_coordinates)
+                    self.actors.append((self.border, self.border.cell_coordinates))
+                    #self.actors_position.append(self.border.cell_coordinates)
 
     def _init_hills(self, hill_count = random.randint(3, 6)):
         """Initialize a random number of hills in random places"""
@@ -120,11 +124,12 @@ class Init_World():
         }
         for hill in range(hill_count):
             place = random.choice(pos)
-            while place in self.actors_position: # while the space is occupied
-                place = random.choice(pos) # generate more choices
+            for actor in self.actors:
+                while place in actor[1]: # while the space is occupied
+                    place = random.choice(pos) # generate more choices
             self.hill = actors.Hill(place, self, './images/hill.jpg')
-            self.actors.append(self.hill)
-            self.actors_position.append(self.hill.cell_coordinates)
+            self.actors.append((self.hill, self.hill.cell_coordinates))
+            # self.actors_position.append(self.hill.cell_coordinates)
 
     def _init_player(self):
         """Initialize the player at the center of the map"""
@@ -159,8 +164,8 @@ class Init_World():
                 print('spawning boss')
                 # should exit the loop now
             if not self._is_occupied(npc.cell_coordinates): # if the spot is not already occupied (probably by an npc)
-                self.actors.append(npc)
-                self.actors_position.append(npc.cell_coordinates)
+                self.actors.append((npc, npc.cell_coordinates))
+                #self.actors_position.append(npc.cell_coordinates)
 
     def _is_in_grid(self, cell_coord):
         """Tells whether cell_coord is valid and in range of the actual grid dimensions."""
@@ -171,9 +176,12 @@ class Init_World():
     def _is_deadly(self, cell_coord):
         """Checks if a space is deadly."""
         try:
-            pos = self.actors_position.index(cell_coord) # get the position of the coord in the list
-            actor = self.actors[pos] # get the actor that is at that coord
-            return actor.deadly # if obstacle is deadly
+            for actor in self.actors:
+                if actor[1] == cell_coord:
+                    return actor[0].deadly
+            # pos = self.actors_position.index(cell_coord) # get the position of the coord in the list
+            # actor = self.actors[pos] # get the actor that is at that coord
+            # return actor.deadly # if obstacle is deadly
         except ValueError: # if the actor does not exist
             return False
 
@@ -183,7 +191,7 @@ class Update(Init_World):
         """"""
         self.world = world
         self.actors = world.actors
-        self.actors_position = world.actors_position
+        # self.actors_position = world.actors_position
         self.player = world.player
         self.screen = world.screen
 
@@ -195,21 +203,21 @@ class Update(Init_World):
     def _npc_actions(self):
         """Execute the action of each npc"""
         for actor in self.actors: # itterate through each actor
-            if type(actor) == actors.Grunt:
-                actor.action()
+            if type(actor[0]) == actors.Grunt:
+                actor[0].action()
 
-    def _check_movement(self, actor):
-        """Check if an item has moved, if it has, update the position"""
-        pos = self.actors.index(actor) # get the position of the coord in the list
-        if self.actors_position[pos] != actor.cell_coordinates: # if the position is not updated
-            self.actors_position[pos] = actor.cell_coordinates # update the position
+    # def _check_movement(self, actor):
+    #     """Check if an item has moved, if it has, update the position"""
+    #     pos = self.actors.index(actor) # get the position of the coord in the list
+    #     if self.actors[pos] != actor.cell_coordinates: # if the position is not updated
+    #         self.actors[pos] = actor.cell_coordinates # update the position
 
     def _draw_actors(self):
         """Draws the actors"""
         for actor in self.actors: # itterate through each actor
-            if type(actor) == actors.Npc or type(actor) == actors.Grunt:
-                self._check_movement(actor) # check if the object has moved, if not do not update
-            actor.draw() # draw each actor
+            #if type(actor) == actors.Npc or type(actor) == actors.Grunt:
+            #    self._check_movement(actor) # check if the object has moved, if not do not update
+            actor[0].draw() # draw each actor
         actor = self.player
         actor.draw()
 
@@ -220,7 +228,7 @@ class Update(Init_World):
         # check if there are npcs in the world
         npc = False
         for actor in self.actors:
-            if type(actor) == actors.Grunt or type(actor) == actors.Npc:
+            if type(actor[0]) == actors.Grunt or type(actor[0]) == actors.Npc:
                 npc = True
         if not npc:
             self.world.cleared = True

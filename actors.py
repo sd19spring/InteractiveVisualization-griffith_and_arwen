@@ -116,6 +116,9 @@ class Actor():
             else: # if not facing right, rotate right
                 new_image = transform.rotate(self.image_orig, 270)
                 new_facing = 270
+        if self.world.cleared == True:
+            if new_coord == self.world.open_door.cell_coordinates:
+                self.cell_coordinates = new_coord
         if new_coord != self.cell_coordinates and self.is_valid(new_coord): # if the coord changed and is valid
                 self.cell_coordinates = new_coord
         else:
@@ -124,7 +127,7 @@ class Actor():
                 self.facing = new_facing
             except UnboundLocalError: # if the item has not moved or rotated
                 pass # ie no new image
-                # return None # ie no new image
+
 
 class Player(Actor):
     """Creates the Player to place on the map"""
@@ -171,23 +174,27 @@ class Sword(Actor):
 
     def _swing(self):
         """Check if the sword hits an npc"""
-        self.world.actors_position.append(self.cell_coordinates) # add the sword
-        self.world.actors.append(self)
+        #self.world.actors_position.append(self.cell_coordinates) # add the sword
+        self.world.actors.append((self, self.cell_coordinates))
+
         gameworld.Update(self.world)._redraw() # draw the sword
         time.sleep(.5) # how long to swing
         # GET THE CURRENT TICK OF THE WORLD
         # GET A VALUE OF THE TICK WHERE IT SHOULD GO AWAY
         # HAVE THE UPDATE CLASS DEAL WITH REMOVING THE SWORD
-        self.world.actors_position.remove(self.cell_coordinates) # remove the sword
-        self.world.actors.remove(self)
+        #self.world.actors_position.remove(self.cell_coordinates) # remove the sword
+        self.world.actors.remove((self, self.cell_coordinates))
 
-        pos = self.world.actors_position.index(self.cell_coordinates) # get the position of the coord in the list
-        actor = self.world.actors[pos] # get the actor that is at that coord
-        if actor.removable == True:
-            actor.health += -1 # remove one health, only exists if the item is removable
-            if actor.health <= 0: # if dead
-                del self.world.actors_position[pos] # get rid of the swing from the list of actors
-                del self.world.actors[pos]
+        pos = self.cell_coordinates # get the position of the coord in the list
+        for actor in self.world.actors:
+            if actor[1] == pos:
+                if actor[0].removable == True:
+                    actor[0].health += -1 # remove one health, only exists if the item is removable
+                    if actor[0].health <= 0: # if dead
+                        #del self.world.actors_position[pos] # get rid of the swing from the list of actors
+                        self.world.actors.remove(actor)
+        #actor = self.world.actors[pos] # get the actor that is at that coord
+
 
 class Npc(Actor):
     """Creates an NPC to place in the world"""
