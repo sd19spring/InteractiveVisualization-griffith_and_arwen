@@ -59,23 +59,6 @@ class Game():
             door_side = random.randint(0, 3) * 90
         return door_side
 
-class Start():
-    """Start screen for the game"""
-    def __init__(self):
-        pygame.init()
-        screen_size = (450, 450)
-        self.screen = pygame.display.set_mode(screen_size)
-
-    def _draw_background(self):
-        """Sets the background color"""
-        COLOR = (252, 216, 169) # the beige from the legend of zelda games
-        self.screen.fill(COLOR)
-
-    def _redraw(self):
-        """Updates the world view"""
-        self._draw_background()
-        pygame.display.update()
-
 def run_game(game):
     while game.world.running:
         game.clock.tick(8)
@@ -94,18 +77,5 @@ def run_game(game):
             print(game.level)
 
 if __name__ == "__main__":
-    start = Start()
-    start_game = False
-
-    running = True
-    while running == True:
-        start._redraw()
-        for event in pygame.event.get():
-            if event.type is pygame.QUIT: # if the program is closed
-                running = False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                start_game = True
-        if start_game == True:
-            game = Game()
-            run_game(game)
-            start_game = False
+    game = Game()
+    run_game(game)
