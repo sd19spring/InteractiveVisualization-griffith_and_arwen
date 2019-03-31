@@ -152,16 +152,15 @@ class Init_World():
     def _init_npcs(self):
         """Initialize the npcs on the map"""
         for i in range(self.level):
-            if i == 0 or i ==2: # spawn up to two grunts
-                print('spawning grunt')
-                npc = actors.Grunt(self._npc_locations(npc_position = random.randint(1, 4)), self, 'images/npc2.jpg')
+            if i == 0 or i ==2: # spawn up to two npcs
+                npc = actors.Npc(self._npc_locations(npc_position = random.randint(1, 4)), self, 'images/npc2.jpg')
             elif i == 1:
                 # spawn lava
-                print('spawning lava')
+                pass
             elif 3 <= i >= 4: # spawn up to two ghosts
-                print('spawning ghost')
+                pass
             elif i >= 5: # if on the fifth level
-                print('spawning boss')
+                pass
                 # should exit the loop now
             if not self._is_occupied(npc.cell_coordinates): # if the spot is not already occupied (probably by an npc)
                 self.actors.append((npc, npc.cell_coordinates))

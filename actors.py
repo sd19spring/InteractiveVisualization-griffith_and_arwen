@@ -174,15 +174,10 @@ class Sword(Actor):
 
     def _swing(self):
         """Check if the sword hits an npc"""
-        #self.world.actors_position.append(self.cell_coordinates) # add the sword
         self.world.actors.append((self, self.cell_coordinates))
 
         gameworld.Update(self.world)._redraw() # draw the sword
-        time.sleep(.5) # how long to swing
-        # GET THE CURRENT TICK OF THE WORLD
-        # GET A VALUE OF THE TICK WHERE IT SHOULD GO AWAY
-        # HAVE THE UPDATE CLASS DEAL WITH REMOVING THE SWORD
-        #self.world.actors_position.remove(self.cell_coordinates) # remove the sword
+        # time.sleep(.5) # how long to swing
         self.world.actors.remove((self, self.cell_coordinates))
 
         pos = self.cell_coordinates # get the position of the coord in the list
