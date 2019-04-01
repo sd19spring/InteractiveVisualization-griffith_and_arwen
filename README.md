@@ -3,8 +3,10 @@ Randomly generated map with randomly spawned enemies. Goal is to kill all the en
 Inspired by the old Zelda games.
 
 ## Running the Program
+* Install pygame using the command "pip install pygame"
 * Clone the repository
-* Run game.py using python
+* Navigating to the directory where you cloned the repository
+* Run the game using the command "python game.py"
 
 ## Playing the Game
 * Use WASD, ,AOE, or the arrow keys to move around
